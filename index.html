@@ -1155,3 +1155,929 @@ function renderTaskPage(id){
 
   return `
   <div class="task-page">
+    const sols = solutionsOf(t.id);
+    const canMark = state.isAdmin || t.authorId === CURRENT_USER_ID;
+
+    return `
+    <div class="task-page">
+      <a href="#/" class="back-link">${icon('arrowLeft')} Все задачи</a>
+
+      <div class="task-sticky">
+        <div class="tsb-tags">
+          <span class="tag tag-cat">${icon(c.icon)} ${c.name}</span>
+          <span class="tag ${difficultyClass(t.difficulty)}">${t.difficulty}</span>
+          ${t.status === 'best'
+            ? '<span class="tag tag-best">Лучшее решение</span>'
+            : '<span class="tag tag-open"><span class="status-dot"></span> Открыта</span>'}
+        </div>
+        <div class="tsb-right">
+          <span>${sols.length} ${plural(sols.length,'решение','решения','решений')}</span>
+          <button class="btn btn-ghost btn-sm" data-action="open-notes" data-task="${t.id}">
+            ${icon('note')} Открыть заметки
+          </button>
+        </div>
+      </div>
+
+      <article class="task-article">
+        <h1>${esc(t.title)}</h1>
+        <div class="meta-row">
+          <span class="tag tag-org">${esc(t.org)}</span>
+          <span class="mi" style="display:inline-flex;align-items:center;gap:6px">${icon('calendar')} ${fmtDate(t.date)}</span>
+          <span>${t.difficulty}</span>
+          <span>${sols.length} ${plural(sols.length,'решение','решения','решений')}</span>
+        </div>
+        <div class="bb-content task-condition">${bbToHtml(t.body)}</div>
+      </article>
+
+      <div class="solutions-head">
+        <h2>${icon('message')} Решения студентов <span class="counter-pill">${sols.length}</span></h2>
+        ${canMark ? '<span class="muted" style="font-size:13px">Вы можете отметить лучшее решение</span>' : ''}
+      </div>
+
+      <div class="solutions-list">
+        ${sols.length
+          ? sols.map(function(s){ return solutionHtml(s, canMark, t); }).join('')
+          : `<div class="empty">${icon('empty')}<div>Пока нет решений — станьте первым!</div></div>`}
+      </div>
+
+      <div class="solutions-head" style="margin-top:42px">
+        <h2>${icon('send')} Предложить решение</h2>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px">
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+          <div class="avatar sm">${esc(me().avatar)}</div>
+          <div>
+            <div style="font-weight:650;font-size:14px">${esc(me().name)}</div>
+            <div style="font-size:12px;color:var(--slate-500)">Решение будет опубликовано от вашего имени</div>
+          </div>
+        </div>
+        ${bbEditorHtml('sol-' + t.id, 'Опишите ваше решение. Поддерживаются BB-коды.', '')}
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" data-action="publish-solution" data-task="${t.id}">
+            ${icon('send')} Опубликовать решение
+          </button>
+          <button class="btn btn-ghost" data-action="open-notes" data-task="${t.id}">
+            ${icon('note')} Мои заметки
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function solutionHtml(s, canMark, task){
+    const author = userById(s.authorId) || { name:'Аноним', avatar:'??', university:'', spec:'' };
+    const subline = author.university || author.spec || '';
+    return `
+    <div class="solution ${s.best ? 'best' : ''}" id="sol-${s.id}">
+      <div class="solution-head">
+        <div class="avatar sm ${author.type === 'org' ? 'org' : ''}">${esc(author.avatar)}</div>
+        <div>
+          <div class="solution-author">
+            ${esc(author.name)}
+            ${s.best ? '<span class="solution-best-badge">' + icon('award') + ' Лучшее решение</span>' : ''}
+          </div>
+          <div class="solution-sub">${esc(subline)}</div>
+        </div>
+        <div class="solution-date">${fmtDate(s.date)}</div>
+      </div>
+      <div class="bb-content">${bbToHtml(s.body)}</div>
+      ${canMark && !s.best ? `
+        <div class="solution-actions">
+          <button class="btn btn-soft btn-sm" data-action="mark-best" data-id="${s.id}" data-task="${task.id}">
+            ${icon('award')} Отметить как лучшее решение
+          </button>
+        </div>` : ''}
+    </div>`;
+  }
+
+  /* ============================================================
+     6. BB-РЕДАКТОР
+     ============================================================ */
+  const BB_BUTTONS = [
+    { tag:'b',     label:'Жирный',       title:'Жирный текст — [b][/b]' },
+    { tag:'i',     label:'Курсив',       title:'Курсив — [i][/i]' },
+    { tag:'u',     label:'Подчёркнутый', title:'Подчёркнутый текст — [u][/u]' },
+    { tag:'sub',   label:'Индекс',       title:'Нижний индекс (формулы) — [sub][/sub]' },
+    { tag:'sup',   label:'Степень',      title:'Верхний индекс (степени/ионы) — [sup][/sup]' },
+    { tag:'quote', label:'Цитата',       title:'Цитата — [quote][/quote]' },
+    { tag:'code',  label:'Код',          title:'Код / последовательность ДНК — [code][/code]' },
+    { tag:'list',  label:'Список',       title:'Список — [list][*][/list]' },
+    { tag:'url',   label:'Ссылка',       title:'Ссылка — [url=][/url]' }
+  ];
+
+  const BB_CONFIG = {
+    b:     ['[b]', '[/b]', 'текст'],
+    i:     ['[i]', '[/i]', 'текст'],
+    u:     ['[u]', '[/u]', 'текст'],
+    sub:   ['[sub]', '[/sub]', '2'],
+    sup:   ['[sup]', '[/sup]', '2'],
+    quote: ['[quote]', '[/quote]', 'цитата'],
+    code:  ['[code]', '[/code]', 'ATGC'],
+    list:  ['[list][*]', '[/list]', 'пункт'],
+    url:   ['[url=АДРЕС]', '[/url]', 'текст ссылки']
+  };
+
+  function bbEditorHtml(prefix, placeholder, value){
+    value = value || '';
+    return `
+    <div class="editor" data-editor="${prefix}">
+      <div class="editor-toolbar">
+        ${BB_BUTTONS.map(function(b){
+          return `<button type="button" class="bb-btn" data-bb="${b.tag}" title="${esc(b.title)}">${esc(b.label)}</button>`;
+        }).join('')}
+      </div>
+      <div class="editor-tabs">
+        <button type="button" class="editor-tab active" data-tab="edit">Редактор</button>
+        <button type="button" class="editor-tab" data-tab="preview">Как будет выглядеть</button>
+      </div>
+      <textarea class="editor-textarea" data-role="editor-input" placeholder="${esc(placeholder)}">${esc(value)}</textarea>
+      <div class="editor-preview bb-content" data-role="editor-preview" style="display:none">${bbToHtml(value)}</div>
+      <div class="editor-footer">
+        <span>BB-коды: [b] [i] [u] [sub] [sup] [quote] [code] [list] [url]</span>
+      </div>
+    </div>`;
+  }
+
+  function handleBbBtn(btn){
+    const editor = btn.closest('.editor');
+    if(!editor) return;
+    const ta = editor.querySelector('[data-role="editor-input"]');
+    if(!ta) return;
+
+    const tag = btn.dataset.bb;
+    const cfg = BB_CONFIG[tag];
+    if(!cfg) return;
+
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const sel = ta.value.slice(start, end);
+    const before = ta.value.slice(0, start);
+    const after = ta.value.slice(end);
+
+    // Список с несколькими строками — каждая строка становится пунктом
+    if(tag === 'list' && sel.indexOf('\n') !== -1){
+      const items = sel.split('\n').map(function(l){ return '[*]' + l; }).join('\n');
+      ta.value = before + '[list]\n' + items + '\n[/list]' + after;
+      ta.focus();
+      const pos = before.length + '[list]\n'.length + items.length + '\n[/list]'.length;
+      ta.setSelectionRange(pos, pos);
+      return;
+    }
+
+    // URL: ставим курсор сразу после "="
+    if(tag === 'url'){
+      const text = sel || 'текст ссылки';
+      const insert = '[url=]' + text + '[/url]';
+      ta.value = before + insert + after;
+      ta.focus();
+      const pos = start + '[url='.length;
+      ta.setSelectionRange(pos, pos);
+      return;
+    }
+
+    const open = cfg[0], close = cfg[1], placeholder = cfg[2];
+    const text = sel || placeholder;
+    ta.value = before + open + text + close + after;
+    ta.focus();
+
+    if(sel){
+      const pos = start + open.length + text.length + close.length;
+      ta.setSelectionRange(pos, pos);
+    } else {
+      ta.setSelectionRange(start + open.length, start + open.length + placeholder.length);
+    }
+  }
+
+  function handleEditorTab(tab){
+    const editor = tab.closest('.editor');
+    if(!editor) return;
+    const name = tab.dataset.tab;
+
+    editor.querySelectorAll('.editor-tab').forEach(function(t){
+      t.classList.toggle('active', t.dataset.tab === name);
+    });
+
+    const ta = editor.querySelector('[data-role="editor-input"]');
+    const preview = editor.querySelector('[data-role="editor-preview"]');
+
+    if(name === 'preview'){
+      preview.innerHTML = bbToHtml(ta.value);
+      preview.style.display = 'block';
+      ta.style.display = 'none';
+    } else {
+      preview.style.display = 'none';
+      ta.style.display = 'block';
+      ta.focus();
+    }
+  }
+
+  /* ============================================================
+     7. ЛИЧНЫЙ КАБИНЕТ
+     ============================================================ */
+  function renderProfile(){
+    const u = me();
+    const mySols = solutions.filter(function(s){ return s.authorId === CURRENT_USER_ID; });
+    const myBest = mySols.filter(function(s){ return s.best; });
+    const myNotes = notes.filter(function(n){ return n.userId === CURRENT_USER_ID; });
+
+    const tabs = [
+      ['profile', 'Мой профиль'],
+      ['notes',   'Мои заметки'],
+      ['activity','Мои решения и задачи']
+    ];
+
+    let content = '';
+
+    if(state.profileTab === 'notes'){
+      content = `
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+          <h3 style="margin:0">Мои заметки <span class="counter-pill">${myNotes.length}</span></h3>
+          <button class="btn btn-primary btn-sm" data-action="new-note">${icon('plus')} Новая заметка</button>
+        </div>
+        ${myNotes.length ? `<div class="notes-grid">${myNotes.map(function(n){
+          const t = n.taskId ? tasks.find(function(x){ return x.id === n.taskId; }) : null;
+          return `<div class="note-card">
+            <h4>${esc(n.title)}</h4>
+            <div class="note-body">${esc(n.body).replace(/\n/g,'<br>')}</div>
+            <div class="note-foot">
+              <span>${fmtDate(n.date)}</span>
+              <div style="display:flex;gap:2px">
+                <button class="icon-btn" data-action="edit-note" data-id="${n.id}" title="Редактировать">${icon('edit')}</button>
+                <button class="icon-btn danger" data-action="delete-note" data-id="${n.id}" title="Удалить">${icon('trash')}</button>
+              </div>
+            </div>
+            ${t ? `<a class="note-link" href="#/task/${t.id}" style="margin-top:10px;display:inline-block">→ ${esc(t.title.slice(0,42))}${t.title.length > 42 ? '…' : ''}</a>` : ''}
+          </div>`;
+        }).join('')}</div>`
+        : `<div class="empty" style="padding:44px 20px">${icon('empty')}<div>Заметок пока нет</div><div style="margin-top:6px;font-size:13px">Создайте первую заметку — она появится здесь</div></div>`}
+      </div>`;
+    } else if(state.profileTab === 'activity'){
+      content = `
+      <div class="panel">
+        <h3>Мои решения <span class="counter-pill">${mySols.length}</span></h3>
+        ${mySols.length ? mySols.map(function(s){
+          const t = tasks.find(function(x){ return x.id === s.taskId; });
+          return `<div style="padding:13px 0;border-bottom:1px solid var(--border-soft);display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <a href="#/task/${s.taskId}" style="font-weight:650;color:var(--green);display:block;line-height:1.4">${esc(t ? t.title : 'Задача удалена')}</a>
+              <div style="font-size:12.5px;color:var(--slate-500);margin-top:4px">
+                ${fmtDate(s.date)}${s.best ? ' · <span style="color:var(--green);font-weight:650">Лучшее решение</span>' : ''}
+              </div>
+            </div>
+            ${s.best ? `<span class="tag tag-best">${icon('award')} Лучшее</span>` : ''}
+          </div>`;
+        }).join('') : `<div class="empty" style="padding:40px 20px">${icon('empty')}<div>Вы ещё не публиковали решения</div></div>`}
+      </div>
+      <div class="panel">
+        <h3>Мои задачи <span class="counter-pill">${tasks.filter(function(t){ return t.authorId === CURRENT_USER_ID; }).length}</span></h3>
+        ${tasks.filter(function(t){ return t.authorId === CURRENT_USER_ID; }).length
+          ? tasks.filter(function(t){ return t.authorId === CURRENT_USER_ID; }).map(function(t){
+              return `<div style="padding:12px 0;border-bottom:1px solid var(--border-soft)">
+                <a href="#/task/${t.id}" style="font-weight:650;color:var(--green)">${esc(t.title)}</a>
+                <div style="font-size:12.5px;color:var(--slate-500);margin-top:4px">${fmtDate(t.date)} · ${solutionsOf(t.id).length} ${plural(solutionsOf(t.id).length,'решение','решения','решений')}</div>
+              </div>`;
+            }).join('')
+          : `<div class="empty" style="padding:40px 20px">${icon('empty')}<div>Вы ещё не публиковали задачи</div></div>`}
+      </div>`;
+    } else {
+      content = `
+      <div class="panel">
+        <h3>О себе</h3>
+        <p style="color:var(--slate-600);font-size:14px;line-height:1.7">${esc(u.about || 'Информация не заполнена')}</p>
+      </div>
+      <div class="panel">
+        <h3>Контакты и статус</h3>
+        <dl class="kv">
+          <dt>Роль</dt><dd>${esc(u.role)}</dd>
+          <dt>ВУЗ</dt><dd>${esc(u.university || '—')}</dd>
+          <dt>Специализация</dt><dd>${esc(u.spec)}</dd>
+          <dt>Статус</dt><dd><span class="tag tag-open"><span class="status-dot"></span>${esc(u.status)}</span></dd>
+        </dl>
+      </div>`;
+    }
+
+    return `
+    <div class="profile-page wrap">
+      <div class="profile-head">
+        <div class="avatar lg">${esc(u.avatar)}</div>
+        <div class="profile-id">
+          <h1>${esc(u.name)}</h1>
+          <div class="role-line">${esc(u.role)} · ${esc(u.university)} · ${esc(u.spec)}</div>
+          <div class="profile-badges">
+            <span class="tag tag-open"><span class="status-dot"></span>${esc(u.status)}</span>
+            <span class="tag tag-cat">${esc(u.spec)}</span>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="pstat"><b>${mySols.length}</b><span>решений</span></div>
+          <div class="pstat"><b>${myBest.length}</b><span>лучших</span></div>
+          <div class="pstat"><b>${myNotes.length}</b><span>заметок</span></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        ${tabs.map(function(t){
+          return `<button class="tab ${state.profileTab === t[0] ? 'active' : ''}" data-action="profile-tab" data-tab="${t[0]}">${t[1]}</button>`;
+        }).join('')}
+      </div>
+
+      ${content}
+    </div>`;
+  }
+
+  /* ============================================================
+     8. СООБЩЕСТВО
+     ============================================================ */
+  function renderCommunity(){
+    const students = USERS.filter(function(u){ return u.type === 'student' && u.id !== CURRENT_USER_ID; });
+    const unis = Array.from(new Set(students.map(function(s){ return s.university; }).filter(Boolean))).sort();
+    const specs = Array.from(new Set(USERS.map(function(u){ return u.spec; }).filter(Boolean))).sort();
+
+    return `
+    <div class="community-page wrap">
+      <div style="margin-bottom:26px">
+        <h1 style="font-size:28px;font-weight:740;letter-spacing:-.7px">Сообщество BioCase</h1>
+        <p class="muted" style="margin-top:6px;font-size:14.5px">Найдите студентов, исследователей и организации-партнёры</p>
+      </div>
+
+      <div class="search-box">
+        ${icon('search')}
+        <input class="search-input" id="communitySearch"
+               placeholder="Поиск по имени, ВУЗу, специализации…"
+               value="${esc(state.communityQuery)}">
+      </div>
+
+      <div class="filter-row">
+        <select class="select" id="communityType">
+          <option value="all" ${state.communityType === 'all' ? 'selected' : ''}>Все участники</option>
+          <option value="student" ${state.communityType === 'student' ? 'selected' : ''}>Студенты</option>
+          <option value="org" ${state.communityType === 'org' ? 'selected' : ''}>Организации</option>
+        </select>
+        <select class="select" id="communityUni">
+          <option value="">Все ВУЗы</option>
+          ${unis.map(function(u){
+            return `<option value="${esc(u)}" ${state.communityUni === u ? 'selected' : ''}>${esc(u)}</option>`;
+          }).join('')}
+        </select>
+        <select class="select" id="communitySpec">
+          <option value="">Все специализации</option>
+          ${specs.map(function(s){
+            return `<option value="${esc(s)}" ${state.communitySpec === s ? 'selected' : ''}>${esc(s)}</option>`;
+          }).join('')}
+        </select>
+      </div>
+
+      <div class="people-grid" id="peopleGrid">${peopleGridHtml()}</div>
+    </div>`;
+  }
+
+  function peopleGridHtml(){
+    const q = state.communityQuery.toLowerCase().trim();
+    let list = USERS.filter(function(u){ return u.id !== CURRENT_USER_ID; });
+
+    if(state.communityType !== 'all') list = list.filter(function(u){ return u.type === state.communityType; });
+    if(state.communityUni) list = list.filter(function(u){ return u.university === state.communityUni; });
+    if(state.communitySpec) list = list.filter(function(u){ return u.spec === state.communitySpec; });
+
+    if(q){
+      list = list.filter(function(u){
+        return (u.name || '').toLowerCase().indexOf(q) !== -1 ||
+               (u.university || '').toLowerCase().indexOf(q) !== -1 ||
+               (u.spec || '').toLowerCase().indexOf(q) !== -1 ||
+               (u.about || '').toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    if(!list.length){
+      return `<div class="empty" style="grid-column:1/-1">${icon('empty')}<div>Никого не найдено</div><div style="margin-top:6px;font-size:13px">Попробуйте изменить фильтры</div></div>`;
+    }
+
+    return list.map(function(u){
+      return `
+      <div class="person-card">
+        <div class="avatar ${u.type === 'org' ? 'org' : ''}">${esc(u.avatar)}</div>
+        <div class="person-info">
+          <div class="person-name">${esc(u.name)}</div>
+          <div class="person-role">
+            ${esc(u.role)}${u.university ? ' · ' + esc(u.university) : ''}${u.spec && u.type === 'org' ? ' · ' + esc(u.spec) : ''}
+          </div>
+          <div class="person-tags">
+            ${u.type === 'student' && u.spec ? `<span class="tag tag-cat">${esc(u.spec)}</span>` : ''}
+            ${u.type === 'org' ? `<span class="tag tag-org">Партнёр</span>` : ''}
+            ${u.status ? `<span class="tag tag-open">${esc(u.status)}</span>` : ''}
+          </div>
+          <div class="person-actions">
+            <button class="btn btn-ghost btn-sm" data-action="community-action" data-name="${esc(u.name)}">
+              ${u.type === 'org' ? 'Связаться' : 'Профиль'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function updatePeopleGrid(){
+    const grid = document.getElementById('peopleGrid');
+    if(grid) grid.innerHTML = peopleGridHtml();
+  }
+
+  /* ============================================================
+     9. ЗАМЕТКИ (ЯЩИК)
+     ============================================================ */
+  function openNotes(taskId){
+    state.notesTaskFilter = taskId || null;
+    state.editingNoteId = null;
+    renderNotesDrawer();
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawerOverlay').classList.add('open');
+  }
+
+  function closeNotes(){
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawerOverlay').classList.remove('open');
+  }
+
+  function renderNotesDrawer(){
+    const body = document.getElementById('drawerBody');
+    if(!body) return;
+    const editing = state.editingNoteId;
+
+    if(editing){
+      let note;
+      if(editing === 'new'){
+        note = { title:'', body:'', taskId: state.notesTaskFilter || '' };
+      } else {
+        note = notes.find(function(n){ return n.id === editing; }) || { title:'', body:'', taskId:'' };
+      }
+
+      body.innerHTML = `
+        <div class="field">
+          <label>Заголовок</label>
+          <input class="input" id="noteTitle" value="${esc(note.title)}" placeholder="Например, расчёт буфера">
+        </div>
+        <div class="field">
+          <label>Текст заметки</label>
+          <textarea class="textarea" id="noteBody" placeholder="Черновики, расчёты, идеи…">${esc(note.body)}</textarea>
+        </div>
+        <div class="field">
+          <label>Привязать к задаче</label>
+          <select class="select" id="noteTask" style="width:100%">
+            <option value="">— Без привязки —</option>
+            ${tasks.map(function(t){
+              return `<option value="${t.id}" ${note.taskId === t.id ? 'selected' : ''}>${esc(t.title.slice(0,52))}${t.title.length > 52 ? '…' : ''}</option>`;
+            }).join('')}
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btn-primary btn-sm" data-action="save-note">Сохранить</button>
+          <button class="btn btn-ghost btn-sm" data-action="cancel-note">Отмена</button>
+        </div>`;
+      return;
+    }
+
+    const myNotes = notes.filter(function(n){ return n.userId === CURRENT_USER_ID; });
+
+    if(!myNotes.length){
+      body.innerHTML = `
+        <div style="text-align:center;padding:44px 10px;color:var(--slate-500);font-size:13.5px">
+          ${icon('empty')}
+          <div style="margin-top:12px">Заметок пока нет.<br>Создайте первую — она появится здесь.</div>
+        </div>`;
+      return;
+    }
+
+    body.innerHTML = myNotes.map(function(n){
+      const t = n.taskId ? tasks.find(function(x){ return x.id === n.taskId; }) : null;
+      return `
+      <div class="note-item">
+        <div class="note-item-head">
+          <h4>${esc(n.title)}</h4>
+          <div style="display:flex;gap:2px;flex-shrink:0">
+            <button class="icon-btn" data-action="edit-note" data-id="${n.id}" title="Редактировать">${icon('edit')}</button>
+            <button class="icon-btn danger" data-action="delete-note" data-id="${n.id}" title="Удалить">${icon('trash')}</button>
+          </div>
+        </div>
+        <div class="note-item-body">${esc(n.body).replace(/\n/g,'<br>')}</div>
+        <div class="note-item-foot">
+          <span>${fmtDate(n.date)}</span>
+          ${t ? `<a class="note-link" href="#/task/${t.id}" data-action="close-notes">→ ${esc(t.title.slice(0,38))}${t.title.length > 38 ? '…' : ''}</a>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function saveNote(){
+    const titleEl = document.getElementById('noteTitle');
+    const bodyEl = document.getElementById('noteBody');
+    const taskEl = document.getElementById('noteTask');
+    if(!titleEl || !bodyEl) return;
+
+    const title = titleEl.value.trim();
+    const text = bodyEl.value.trim();
+    const taskId = (taskEl && taskEl.value) || null;
+
+    if(!title || !text){ toast('Заполните заголовок и текст заметки'); return; }
+
+    if(state.editingNoteId === 'new'){
+      notes.unshift({
+        id: 'n' + Date.now(),
+        userId: CURRENT_USER_ID,
+        title: title,
+        body: text,
+        taskId: taskId,
+        date: new Date().toISOString().slice(0,10)
+      });
+    } else {
+      const n = notes.find(function(x){ return x.id === state.editingNoteId; });
+      if(n){ n.title = title; n.body = text; n.taskId = taskId; }
+    }
+
+    state.editingNoteId = null;
+    renderNotesDrawer();
+    toast('Заметка сохранена');
+
+    if(location.hash === '#/profile') router();
+  }
+
+  function deleteNote(id){
+    if(!window.confirm('Удалить эту заметку?')) return;
+    notes = notes.filter(function(n){ return n.id !== id; });
+    renderNotesDrawer();
+    toast('Заметка удалена');
+    if(location.hash === '#/profile') router();
+  }
+
+  /* ============================================================
+     10. НОВАЯ ЗАДАЧА (МОДАЛ)
+     ============================================================ */
+  function openNewTaskModal(){
+    const orgs = USERS.filter(function(u){ return u.type === 'org'; });
+    if(document.getElementById('newTaskModal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'newTaskModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;';
+
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;max-width:740px;width:100%;padding:28px 30px;box-shadow:0 30px 80px -20px rgba(15,23,42,.45);margin:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h2 style="font-size:21px;font-weight:740;letter-spacing:-.4px">Новая задача</h2>
+          <button class="icon-btn" data-action="close-new-task" style="width:34px;height:34px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="field">
+          <label>Заголовок задачи</label>
+          <input class="input" id="newTaskTitle" placeholder="Например, Оптимизация протокола ПЦР">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field">
+            <label>Область знаний</label>
+            <select class="select" id="newTaskCategory" style="width:100%">
+              ${CATEGORIES.filter(function(c){ return c.id !== 'all'; }).map(function(c){
+                return `<option value="${c.id}">${c.name}</option>`;
+              }).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Сложность</label>
+            <select class="select" id="newTaskDifficulty" style="width:100%">
+              <option value="Базовый">Базовый</option>
+              <option value="Продвинутый">Продвинутый</option>
+              <option value="R&D">R&amp;D</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Организация-заказчик</label>
+          <select class="select" id="newTaskOrg" style="width:100%">
+            ${orgs.map(function(o){
+              return `<option value="${o.id}">${esc(o.name)}</option>`;
+            }).join('')}
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Условие задачи (BB-коды)</label>
+          ${bbEditorHtml('new-task', 'Опишите проблему, ограничения и ожидаемый результат', '')}
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+          <button class="btn btn-ghost" data-action="close-new-task">Отмена</button>
+          <button class="btn btn-primary" data-action="publish-task">${icon('plus')} Опубликовать задачу</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e){
+      if(e.target === modal) modal.remove();
+    });
+  }
+
+  function publishTask(){
+    const titleEl = document.getElementById('newTaskTitle');
+    const catEl = document.getElementById('newTaskCategory');
+    const diffEl = document.getElementById('newTaskDifficulty');
+    const orgEl = document.getElementById('newTaskOrg');
+    const editor = document.querySelector('.editor[data-editor="new-task"]');
+    if(!titleEl || !catEl || !diffEl || !orgEl || !editor) return;
+
+    const title = titleEl.value.trim();
+    const body = editor.querySelector('[data-role="editor-input"]').value.trim();
+
+    if(!title || !body){ toast('Заполните заголовок и условие задачи'); return; }
+
+    const org = USERS.find(function(u){ return u.id === orgEl.value; });
+
+    tasks.unshift({
+      id: 't' + Date.now(),
+      category: catEl.value,
+      difficulty: diffEl.value,
+      status: 'open',
+      title: title,
+      orgId: org ? org.id : 'o1',
+      org: org ? org.name : 'Партнёр',
+      authorId: CURRENT_USER_ID,
+      date: new Date().toISOString().slice(0,10),
+      body: body
+    });
+
+    const modal = document.getElementById('newTaskModal');
+    if(modal) modal.remove();
+
+    toast('Задача опубликована');
+
+    if(location.hash !== '#/'){
+      location.hash = '#/';
+    } else {
+      router();
+    }
+  }
+
+  /* ============================================================
+     11. ДЕЙСТВИЯ
+     ============================================================ */
+  function handleMarkBest(btn){
+    const solId = btn.dataset.id;
+    const taskId = btn.dataset.task;
+
+    solutions.forEach(function(s){
+      if(s.taskId === taskId) s.best = false;
+    });
+    const target = solutions.find(function(s){ return s.id === solId; });
+    if(target) target.best = true;
+
+    const t = tasks.find(function(x){ return x.id === taskId; });
+    if(t) t.status = 'best';
+
+    toast('Отмечено как лучшее решение');
+    router();
+  }
+
+  function handlePublishSolution(btn){
+    const taskId = btn.dataset.task;
+    const editor = document.querySelector('.editor[data-editor="sol-' + taskId + '"]');
+    if(!editor) return;
+    const text = editor.querySelector('[data-role="editor-input"]').value.trim();
+    if(!text){ toast('Введите текст решения'); return; }
+
+    solutions.push({
+      id: 's' + Date.now(),
+      taskId: taskId,
+      authorId: CURRENT_USER_ID,
+      date: new Date().toISOString().slice(0,10),
+      body: text,
+      best: false
+    });
+
+    toast('Решение опубликовано');
+    router();
+  }
+
+  function toggleAdmin(){
+    state.isAdmin = !state.isAdmin;
+    const btn = document.getElementById('adminToggle');
+    btn.classList.toggle('on', state.isAdmin);
+    document.getElementById('newTaskBtn').style.display = state.isAdmin ? '' : 'none';
+    toast(state.isAdmin ? 'Режим администратора включён' : 'Режим администратора выключен');
+    router();
+  }
+
+  function handleAction(action, el){
+    switch(action){
+      case 'set-cat':
+        state.category = el.dataset.cat;
+        router();
+        break;
+
+      case 'set-diff':
+        state.difficulty = el.dataset.val;
+        router();
+        break;
+
+      case 'set-status':
+        state.status = el.dataset.val;
+        router();
+        break;
+
+      case 'open-task':
+        location.hash = '#/task/' + el.dataset.id;
+        break;
+
+      case 'mark-best':
+        handleMarkBest(el);
+        break;
+
+      case 'publish-solution':
+        handlePublishSolution(el);
+        break;
+
+      case 'open-notes':
+        openNotes(el.dataset.task);
+        break;
+
+      case 'close-notes':
+        closeNotes();
+        break;
+
+      case 'new-note':
+        // Если ящик ещё не открыт — сбрасываем привязку к задаче
+        if(!document.getElementById('drawer').classList.contains('open')){
+          state.notesTaskFilter = null;
+        }
+        state.editingNoteId = 'new';
+        document.getElementById('drawer').classList.add('open');
+        document.getElementById('drawerOverlay').classList.add('open');
+        renderNotesDrawer();
+        break;
+
+      case 'save-note':
+        saveNote();
+        break;
+
+      case 'cancel-note':
+        state.editingNoteId = null;
+        renderNotesDrawer();
+        break;
+
+      case 'edit-note':
+        state.editingNoteId = el.dataset.id;
+        document.getElementById('drawer').classList.add('open');
+        document.getElementById('drawerOverlay').classList.add('open');
+        renderNotesDrawer();
+        break;
+
+      case 'delete-note':
+        deleteNote(el.dataset.id);
+        break;
+
+      case 'profile-tab':
+        state.profileTab = el.dataset.tab;
+        router();
+        break;
+
+      case 'close-new-task': {
+        const m = document.getElementById('newTaskModal');
+        if(m) m.remove();
+        break;
+      }
+
+      case 'publish-task':
+        publishTask();
+        break;
+
+      case 'community-action':
+        toast('Запрос к ' + el.dataset.name + ' отправлен (демо)');
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /* ============================================================
+     12. РОУТЕР
+     ============================================================ */
+  function updateNav(hash){
+    const nav = document.getElementById('mainNav');
+    if(!nav) return;
+    let key = 'home';
+    if(hash.indexOf('#/community') === 0) key = 'community';
+    else if(hash.indexOf('#/profile') === 0) key = 'profile';
+
+    nav.querySelectorAll('a').forEach(function(a){
+      a.classList.toggle('active', a.dataset.nav === key);
+    });
+  }
+
+  function router(){
+    const hash = location.hash || '#/';
+    const app = document.getElementById('app');
+    if(!app) return;
+
+    if(hash.indexOf('#/task/') === 0){
+      const id = hash.split('/')[2];
+      app.innerHTML = renderTaskPage(id);
+    } else if(hash === '#/community'){
+      app.innerHTML = renderCommunity();
+    } else if(hash === '#/profile'){
+      app.innerHTML = renderProfile();
+    } else {
+      app.innerHTML = renderHome();
+    }
+
+    updateNav(hash);
+  }
+
+  /* ============================================================
+     13. ГЛОБАЛЬНЫЕ ОБРАБОТЧИКИ
+     ============================================================ */
+  document.addEventListener('click', function(e){
+    const actionEl = e.target.closest('[data-action]');
+    if(actionEl){
+      // ссылки с data-action="close-notes" не должны перехватываться до перехода
+      if(actionEl.tagName === 'A' && actionEl.dataset.action === 'close-notes'){
+        closeNotes();
+        return;
+      }
+      handleAction(actionEl.dataset.action, actionEl);
+    }
+
+    const bbBtn = e.target.closest('.bb-btn');
+    if(bbBtn){
+      e.preventDefault();
+      handleBbBtn(bbBtn);
+    }
+
+    const editorTab = e.target.closest('.editor-tab');
+    if(editorTab){
+      e.preventDefault();
+      handleEditorTab(editorTab);
+    }
+  });
+
+  document.addEventListener('input', function(e){
+    if(e.target.id === 'communitySearch'){
+      state.communityQuery = e.target.value;
+      updatePeopleGrid();
+    }
+  });
+
+  document.addEventListener('change', function(e){
+    if(e.target.id === 'communityType'){
+      state.communityType = e.target.value;
+      updatePeopleGrid();
+    }
+    if(e.target.id === 'communityUni'){
+      state.communityUni = e.target.value;
+      updatePeopleGrid();
+    }
+    if(e.target.id === 'communitySpec'){
+      state.communitySpec = e.target.value;
+      updatePeopleGrid();
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      if(document.getElementById('drawer').classList.contains('open')) closeNotes();
+      const m = document.getElementById('newTaskModal');
+      if(m) m.remove();
+    }
+  });
+
+  /* ============================================================
+     14. ИНИЦИАЛИЗАЦИЯ
+     ============================================================ */
+  function init(){
+    const u = me();
+    const chip = document.getElementById('userChip');
+    if(chip){
+      chip.innerHTML = `
+        <div class="avatar sm">${esc(u.avatar)}</div>
+        <div>
+          <div class="user-chip-name">${esc(u.name)}</div>
+          <div class="user-chip-role">${esc(u.role)}</div>
+        </div>`;
+    }
+
+    document.getElementById('adminToggle').addEventListener('click', toggleAdmin);
+    document.getElementById('newTaskBtn').addEventListener('click', openNewTaskModal);
+    document.getElementById('drawerOverlay').addEventListener('click', closeNotes);
+
+    window.addEventListener('hashchange', router);
+
+    if(!location.hash) location.hash = '#/';
+    router();
+  }
+
+  init();
+</script>
+</body>
+</html>

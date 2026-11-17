@@ -96,6 +96,8 @@
   .btn-ghost:hover{background:var(--bg-soft);border-color:var(--border-strong)}
   .btn-soft{background:var(--primary-light);color:var(--primary-dark)}
   .btn-soft:hover{background:#C6F0D3}
+  .btn-danger{background:var(--danger);color:#fff}
+  .btn-danger:hover{background:#B91C1C;color:#fff}
   .btn-sm{padding:6px 10px;font-size:13px}
   .user-chip{
     display:flex;align-items:center;gap:8px;
@@ -504,6 +506,64 @@
   .role-card-title{font-weight:700;font-size:15px;margin-bottom:4px}
   .role-card-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
 
+  /* ---------- BLANKS ---------- */
+  .blanks-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;
+  }
+  .blank-card{
+    background:var(--bg);border:1px solid var(--border);
+    border-radius:var(--radius);padding:18px;
+    transition:all .2s;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .blank-card:hover{border-color:var(--primary);box-shadow:var(--shadow)}
+  .blank-top{display:flex;gap:12px;align-items:flex-start}
+  .blank-icon{
+    width:48px;height:56px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;font-weight:700;font-size:11px;color:#fff;
+    position:relative;
+  }
+  .blank-icon.pdf{background:#DC2626}
+  .blank-icon.doc{background:#2563EB}
+  .blank-icon::after{
+    content:'';position:absolute;top:0;right:0;
+    width:12px;height:12px;
+    background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.4) 50%);
+  }
+  .blank-info{flex:1;min-width:0}
+  .blank-title{font-weight:600;font-size:15px;margin-bottom:4px;color:var(--text)}
+  .blank-meta{font-size:12px;color:var(--text-muted);line-height:1.5}
+  .blank-meta span{display:inline-block;margin-right:10px}
+  .blank-actions{
+    display:flex;gap:8px;margin-top:6px;padding-top:10px;
+    border-top:1px dashed var(--border);
+  }
+
+  .file-drop{
+    border:2px dashed var(--border);
+    border-radius:var(--radius);
+    padding:30px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:all .2s;
+    background:var(--bg-soft);
+  }
+  .file-drop:hover,.file-drop.dragover{
+    border-color:var(--primary);
+    background:var(--primary-light);
+  }
+  .file-drop-icon{font-size:36px;margin-bottom:8px;opacity:.6}
+  .file-drop-text{font-size:14px;color:var(--text);margin-bottom:4px}
+  .file-drop-hint{font-size:12px;color:var(--text-muted)}
+  .file-selected{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;background:var(--bg-soft);
+    border-radius:8px;margin-top:10px;font-size:13px;
+  }
+  .file-selected-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .file-selected-size{color:var(--text-muted);font-size:12px}
+
   /* ---------- EMPTY ---------- */
   .empty{
     text-align:center;padding:40px 20px;color:var(--text-muted);
@@ -548,6 +608,7 @@
     <nav class="nav" id="nav">
       <button class="nav-btn active" data-view="home" onclick="navigate('home')">Главная</button>
       <button class="nav-btn" data-view="community" onclick="navigate('community')">Сообщество</button>
+      <button class="nav-btn" data-view="blanks" onclick="navigate('blanks')">Бланки</button>
       <button class="nav-btn" data-view="profile" onclick="navigate('profile')">Кабинет</button>
     </nav>
     <div class="header-actions">
@@ -618,36 +679,38 @@
     <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">
       Присоединяйтесь к сообществу — решайте задачи от биотех-компаний или публикуйте свои
     </p>
+    <div id="regStep1"></div>
+  </div>
+</div>
 
-    <div id="regStep1">
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Кто вы?</div>
-      <div class="role-cards">
-        <div class="role-card" id="role_student" onclick="selectRegRole('student')">
-          <div class="role-card-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>
-          </div>
-          <div class="role-card-title">Студент</div>
-          <div class="role-card-desc">Решайте задачи, копите портфолио, находите стажировки</div>
-        </div>
-        <div class="role-card" id="role_org" onclick="selectRegRole('org')">
-          <div class="role-card-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3v6l-6 10a2 2 0 002 3h12a2 2 0 002-3l-6-10V3"/><line x1="8" y1="3" x2="16" y2="3"/></svg>
-          </div>
-          <div class="role-card-title">Организация</div>
-          <div class="role-card-desc">Публикуйте кейсы и находите талантливых студентов</div>
-        </div>
-      </div>
-      <div id="regFormWrap" style="display:none">
-        <div id="regFormFields"></div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-          <button class="btn btn-ghost" onclick="closeModal('registerModal')">Отмена</button>
-          <button class="btn btn-primary" onclick="submitRegister()">Зарегистрироваться</button>
-        </div>
-      </div>
+<!-- Modal: upload blank -->
+<div class="modal-backdrop" id="uploadBlankModal">
+  <div class="modal">
+    <h3>📄 Загрузить бланк</h3>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">
+      Доступные форматы: PDF, DOC, DOCX. Максимальный размер: 5 МБ.
+    </p>
+    <div class="form-group">
+      <label>Название бланка *</label>
+      <input id="blank_title" placeholder="Например: Бланк отчёта по практике">
     </div>
-
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--text-muted)">
-      Уже есть аккаунт? <a href="#" onclick="closeModal('registerModal');return false">Войти</a>
+    <div class="form-group">
+      <label>Описание (необязательно)</label>
+      <textarea id="blank_desc" rows="2" placeholder="Кратко опишите назначение бланка"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Файл *</label>
+      <div class="file-drop" id="fileDrop" onclick="document.getElementById('blankFile').click()">
+        <div class="file-drop-icon">📎</div>
+        <div class="file-drop-text">Нажмите или перетащите файл сюда</div>
+        <div class="file-drop-hint">PDF, DOC, DOCX · до 5 МБ</div>
+      </div>
+      <input type="file" id="blankFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleFileSelect(this)">
+      <div id="fileSelectedInfo"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-ghost" onclick="closeModal('uploadBlankModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="submitBlank()">Загрузить</button>
     </div>
   </div>
 </div>
@@ -680,7 +743,7 @@ const CAT_ICONS = {
   grid:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
 };
 
-// Seed users (демо-аккаунты для демонстрации)
+// Seed users
 const SEED_USERS = [
   {id:'u1',name:'Анна Соколова',role:'student',uni:'МГУ, биологический факультет',spec:'Молекулярная биология',status:'Ищу стажировку',avatar:'АС',solved:7,best:2},
   {id:'u2',name:'Игорь Петров',role:'student',uni:'СПбГУ, биофак',spec:'Биохимия',status:'Активен',avatar:'ИП',solved:4,best:1},
@@ -896,6 +959,47 @@ const DEFAULT_NOTES = [
   {id:'n2',title:'Идеи по задаче Rhodiola',body:'Попробовать UHPLC — короче колонка, выше разрешение.\nПроверить колонку Kinetex C18 2.6 мкм.',linkedTask:'t5',date:'14.11.2026'}
 ];
 
+// Seed blanks — демо-бланки с небольшими dataURL (текстовые заглушки)
+function makeTextDataURL(text){
+  return 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+}
+
+const DEFAULT_BLANKS = [
+  {
+    id:'b1',
+    title:'Бланк отчёта по производственной практике',
+    desc:'Унифицированная форма отчёта для студентов биологических специальностей. Включает титульный лист, дневник практики и характеристику.',
+    filename:'Otchet_po_praktike.docx',
+    type:'docx',
+    size:24500,
+    dataUrl: makeTextDataURL('[ДЕМО-ФАЙЛ] Бланк отчёта по производственной практике\n\nМинистерство науки и высшего образования РФ\n\nОТЧЁТ\nо прохождении производственной практики\n\nСтудент: _________________________\nГруппа: _________________________\nБаза практики: _________________________\nСроки: с ___ по ___ 20___ г.\n\nРуководитель от организации: _________________\n\n[Полный шаблон будет доступен после загрузки реального файла]'),
+    uploadedBy:'o3',
+    uploadedAt:'10 ноября 2026'
+  },
+  {
+    id:'b2',
+    title:'Форма заявки на публикацию кейса',
+    desc:'Стандартная форма для организаций-партнёров при подаче заявки на размещение биологического кейса на платформе BioCase.',
+    filename:'Zayavka_na_keys.pdf',
+    type:'pdf',
+    size:18200,
+    dataUrl: makeTextDataURL('[ДЕМО-ФАЙЛ] Заявка на публикацию кейса\n\nОрганизация: _________________________\nКонтактное лицо: _________________________\nE-mail: _________________________\nТелефон: _________________________\n\nНазвание кейса: _________________________\nОбласть знаний: _________________________\nУровень сложности: _________________________\nКраткое описание: _________________________\n\nПодпись: _______________  Дата: _______________'),
+    uploadedBy:'o3',
+    uploadedAt:'12 ноября 2026'
+  },
+  {
+    id:'b3',
+    title:'Шаблон описания задачи для R&D-кейса',
+    desc:'Расширенный шаблон для сложных научно-исследовательских задач с требованиями к оформлению исходных данных и ожидаемых результатов.',
+    filename:'RD_case_template.doc',
+    type:'doc',
+    size:31400,
+    dataUrl: makeTextDataURL('[ДЕМО-ФАЙЛ] Шаблон описания R&D кейса\n\n1. Научная проблема\n2. Актуальность\n3. Исходные данные\n4. Методы\n5. Ожидаемый результат\n6. Критерии оценки решения\n7. Литература'),
+    uploadedBy:'o1',
+    uploadedAt:'14 ноября 2026'
+  }
+];
+
 /* ============================================================
    LOCALSTORAGE HELPERS
 ============================================================ */
@@ -903,6 +1007,7 @@ const LS_KEYS = {
   users: 'biocase_users',
   tasks: 'biocase_tasks',
   notes: 'biocase_notes',
+  blanks: 'biocase_blanks',
   currentUserId: 'biocase_currentUserId'
 };
 
@@ -925,6 +1030,7 @@ function lsSet(key, value){
     return true;
   } catch(e){
     console.warn('localStorage: не удалось записать ключ "'+key+'".', e);
+    // При ошибке квоты — пробуем очистить старые данные
     try{ localStorage.clear(); } catch(_){}
     return false;
   }
@@ -946,13 +1052,14 @@ const STATE = {
   users:{},
   tasks:[],
   notes:[],
+  blanks:[],
   editorTarget:null,
   editorMode:'edit',
   _editors:{},
-  _regRole:null
+  _regRole:null,
+  _selectedFile:null // {name, type, size, dataUrl}
 };
 
-// Гость — специальный объект
 const GUEST_USER = {
   id:'guest',
   name:'Гость',
@@ -991,6 +1098,14 @@ function loadState(){
   }
   STATE.notes = notes;
 
+  // blanks
+  let blanks = lsGet(LS_KEYS.blanks, null);
+  if(!Array.isArray(blanks)){
+    blanks = JSON.parse(JSON.stringify(DEFAULT_BLANKS));
+    lsSet(LS_KEYS.blanks, blanks);
+  }
+  STATE.blanks = blanks;
+
   // currentUserId
   let uid = lsGet(LS_KEYS.currentUserId, null);
   if(typeof uid !== 'string' || (uid !== 'guest' && !STATE.users[uid])){
@@ -1000,11 +1115,10 @@ function loadState(){
   STATE.currentUserId = uid;
 }
 
-function saveUsers(){
-  lsSet(LS_KEYS.users, Object.values(STATE.users));
-}
+function saveUsers(){ lsSet(LS_KEYS.users, Object.values(STATE.users)); }
 function saveTasks(){ lsSet(LS_KEYS.tasks, STATE.tasks); }
 function saveNotes(){ lsSet(LS_KEYS.notes, STATE.notes); }
+function saveBlanks(){ lsSet(LS_KEYS.blanks, STATE.blanks); }
 function saveUserId(){ lsSet(LS_KEYS.currentUserId, STATE.currentUserId); }
 
 loadState();
@@ -1022,19 +1136,10 @@ function currentUser(){
   return STATE.users[STATE.currentUserId] || GUEST_USER;
 }
 
-function isGuest(){
-  return STATE.currentUserId === 'guest';
-}
-
-function isOrg(){
-  const u = currentUser();
-  return u.role === 'org';
-}
-
-function isStudent(){
-  const u = currentUser();
-  return u.role === 'student';
-}
+function isGuest(){ return STATE.currentUserId === 'guest'; }
+function isOrg(){ const u = currentUser(); return u.role === 'org'; }
+function isStudent(){ const u = currentUser(); return u.role === 'student'; }
+function canUploadBlanks(){ return !isGuest() && currentUser().role === 'org'; }
 
 /* ============================================================
    BB-CODE PARSER
@@ -1122,6 +1227,26 @@ function statusTag(st){
 
 function catTag(cat){
   return '<span class="tag cat">'+CATEGORIES[cat].name+'</span>';
+}
+
+function formatFileSize(bytes){
+  if(bytes < 1024) return bytes + ' Б';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' КБ';
+  return (bytes/(1024*1024)).toFixed(2) + ' МБ';
+}
+
+function getFileExtension(filename){
+  const parts = String(filename).split('.');
+  if(parts.length < 2) return '';
+  return parts.pop().toLowerCase();
+}
+
+function getFileTypeIcon(type, ext){
+  const t = String(type||'').toLowerCase();
+  const e = String(ext||'').toLowerCase();
+  if(t.includes('pdf') || e === 'pdf') return {cls:'pdf', label:'PDF'};
+  if(t.includes('word') || e === 'doc' || e === 'docx') return {cls:'doc', label:e.toUpperCase()};
+  return {cls:'doc', label:'FILE'};
 }
 
 /* ============================================================
@@ -1570,8 +1695,8 @@ function selectRegRole(role, silent){
         <label>Статус</label>
         <select id="reg_status">
           <option value="Ищу стажировку">Ищу стажировку</option>
-          <option value="Активен">Активен</option>
-          <option value="Открыт к предложениям">Открыт к предложениям</option>
+          <option value="Учусь">Учусь</option>
+          <option value="Люблю решать задачи">Люблю решать задачи</option>
         </select>
       </div>
     `;
@@ -1612,7 +1737,6 @@ function submitRegister(){
   const spec = $('#reg_spec').value.trim();
   const status = $('#reg_status').value;
 
-  // Генерируем аватар из первых букв
   const words = name.split(/\s+/);
   const avatar = words.length >= 2
     ? (words[0][0] + words[1][0]).toUpperCase()
@@ -1722,9 +1846,12 @@ function renderProfile(){
         <div class="side-card">
           <h3>🚀 Возможности организации</h3>
           <div style="font-size:14px;color:var(--text-muted);margin-bottom:10px">
-            Как организация, вы можете публиковать задачи от имени вашей компании или лаборатории.
+            Как организация, вы можете публиковать задачи от имени вашей компании или лаборатории, а также загружать бланки документов.
           </div>
-          <button class="btn btn-primary" onclick="openNewTaskModal()">+ Опубликовать новую задачу</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="openNewTaskModal()">+ Опубликовать задачу</button>
+            <button class="btn btn-soft" onclick="openUploadBlankModal()">📄 Загрузить бланк</button>
+          </div>
         </div>
       `:''}
     `;
@@ -2027,6 +2154,272 @@ function updateSearch(v){
 function setSearchRole(r){STATE.searchRole=r;render()}
 
 /* ============================================================
+   BLANKS
+============================================================ */
+function renderBlanks(){
+  const blanks = STATE.blanks.slice().sort((a,b)=>{
+    // Новые сверху
+    return (b.uploadedAt||'').localeCompare(a.uploadedAt||'');
+  });
+
+  return `
+    <h1 class="page-title">📄 Бланки и документы</h1>
+    <p class="page-sub">Типовые формы, шаблоны отчётов и бланки для работы с платформой</p>
+
+    ${canUploadBlanks()?`
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn btn-primary" onclick="openUploadBlankModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Загрузить бланк
+        </button>
+      </div>
+    `:`
+      ${isGuest()?`
+        <div class="desc-strip" style="margin-bottom:20px;background:var(--primary-light)">
+          <div class="desc-text">
+            <strong>🔐 Загрузка бланков доступна только организациям.</strong> Зарегистрируйтесь как организация, чтобы публиковать документы.
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openRegisterModal()">Зарегистрироваться</button>
+        </div>
+      `:`
+        <div class="desc-strip" style="margin-bottom:20px;background:#FEF3C7">
+          <div class="desc-text">
+            <strong>⚠ Загрузка бланков доступна только организациям.</strong> Студенты могут просматривать и скачивать документы.
+          </div>
+        </div>
+      `}
+    `}
+
+    ${blanks.length===0?`
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <div>Бланков пока нет</div>
+        ${canUploadBlanks()?'<div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="openUploadBlankModal()">Загрузить первый бланк</button></div>':''}
+      </div>
+    `:`
+      <div class="blanks-grid">
+        ${blanks.map(b=>blankCardHTML(b)).join('')}
+      </div>
+    `}
+  `;
+}
+
+function blankCardHTML(b){
+  const ext = getFileExtension(b.filename);
+  const iconInfo = getFileTypeIcon(b.type, ext);
+  const author = getUserById(b.uploadedBy);
+  const canDelete = canUploadBlanks() && (b.uploadedBy === STATE.currentUserId || currentUser().role === 'org');
+
+  return `
+    <div class="blank-card">
+      <div class="blank-top">
+        <div class="blank-icon ${iconInfo.cls}">${iconInfo.label}</div>
+        <div class="blank-info">
+          <div class="blank-title">${escapeHtml(b.title)}</div>
+          <div class="blank-meta">
+            <span>📎 ${escapeHtml(b.filename)}</span><br>
+            <span>💾 ${formatFileSize(b.size)}</span>
+          </div>
+          ${b.desc?`<div style="font-size:13px;color:var(--text-muted);margin-top:6px;line-height:1.5">${escapeHtml(b.desc)}</div>`:''}
+        </div>
+      </div>
+      <div class="blank-meta" style="font-size:12px;color:var(--text-muted)">
+        👤 ${escapeHtml(author.name)} · 📅 ${b.uploadedAt}
+      </div>
+      <div class="blank-actions">
+        <button class="btn btn-primary btn-sm" onclick="downloadBlank('${b.id}')">
+          ⬇ Скачать
+        </button>
+        ${canDelete?`<button class="btn btn-ghost btn-sm" onclick="deleteBlank('${b.id}')" style="color:var(--danger);margin-left:auto">🗑 Удалить</button>`:''}
+      </div>
+    </div>
+  `;
+}
+
+function openUploadBlankModal(){
+  if(!canUploadBlanks()){
+    toast('⚠ Загрузка бланков доступна только организациям');
+    if(isGuest()) openRegisterModal();
+    return;
+  }
+  STATE._selectedFile = null;
+  $('#blank_title').value = '';
+  $('#blank_desc').value = '';
+  $('#fileSelectedInfo').innerHTML = '';
+  const fileInput = $('#blankFile');
+  if(fileInput) fileInput.value = '';
+  openModal('uploadBlankModal');
+  setupFileDrop();
+}
+
+function setupFileDrop(){
+  const drop = $('#fileDrop');
+  if(!drop) return;
+
+  // Удаляем старые обработчики через клонирование
+  const newDrop = drop.cloneNode(true);
+  drop.parentNode.replaceChild(newDrop, drop);
+
+  newDrop.addEventListener('click', ()=>{
+    $('#blankFile').click();
+  });
+
+  newDrop.addEventListener('dragover', (e)=>{
+    e.preventDefault();
+    newDrop.classList.add('dragover');
+  });
+
+  newDrop.addEventListener('dragleave', ()=>{
+    newDrop.classList.remove('dragover');
+  });
+
+  newDrop.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    newDrop.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if(files.length > 0){
+      processFile(files[0]);
+    }
+  });
+}
+
+function handleFileSelect(input){
+  if(input.files && input.files.length > 0){
+    processFile(input.files[0]);
+  }
+}
+
+function processFile(file){
+  const ext = getFileExtension(file.name);
+  const allowedExt = ['pdf','doc','docx'];
+  const allowedType = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+  if(!allowedExt.includes(ext) && !allowedType.includes(file.type)){
+    toast('⚠ Допустимы только файлы PDF, DOC, DOCX');
+    return;
+  }
+
+  const MAX_SIZE = 5 * 1024 * 1024; // 5 МБ
+  if(file.size > MAX_SIZE){
+    toast('⚠ Файл слишком большой (максимум 5 МБ)');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    STATE._selectedFile = {
+      name: file.name,
+      type: file.type || ('application/' + ext),
+      size: file.size,
+      dataUrl: e.target.result
+    };
+    renderFileSelectedInfo();
+  };
+  reader.onerror = function(){
+    toast('⚠ Не удалось прочитать файл');
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderFileSelectedInfo(){
+  const info = $('#fileSelectedInfo');
+  if(!info) return;
+  const f = STATE._selectedFile;
+  if(!f){
+    info.innerHTML = '';
+    return;
+  }
+  const ext = getFileExtension(f.name);
+  const iconInfo = getFileTypeIcon(f.type, ext);
+  info.innerHTML = `
+    <div class="file-selected">
+      <div class="blank-icon ${iconInfo.cls}" style="width:32px;height:40px;font-size:9px">${iconInfo.label}</div>
+      <div class="file-selected-name">${escapeHtml(f.name)}</div>
+      <div class="file-selected-size">${formatFileSize(f.size)}</div>
+      <button class="btn btn-ghost btn-sm" onclick="clearSelectedFile()" style="padding:4px 8px">✕</button>
+    </div>
+  `;
+}
+
+function clearSelectedFile(){
+  STATE._selectedFile = null;
+  const fileInput = $('#blankFile');
+  if(fileInput) fileInput.value = '';
+  renderFileSelectedInfo();
+}
+
+function submitBlank(){
+  if(!canUploadBlanks()){
+    toast('⚠ Только организации могут загружать бланки');
+    return;
+  }
+
+  const title = $('#blank_title').value.trim();
+  if(!title){toast('Введите название бланка');return}
+
+  const desc = $('#blank_desc').value.trim();
+
+  if(!STATE._selectedFile){
+    toast('Выберите файл для загрузки');
+    return;
+  }
+
+  const f = STATE._selectedFile;
+
+  const newBlank = {
+    id: 'b' + Date.now(),
+    title: title,
+    desc: desc,
+    filename: f.name,
+    type: f.type,
+    size: f.size,
+    dataUrl: f.dataUrl,
+    uploadedBy: STATE.currentUserId,
+    uploadedAt: '17 ноября 2026'
+  };
+
+  STATE.blanks.unshift(newBlank);
+  const saved = saveBlanks();
+
+  if(!saved){
+    // Откатываем, если не удалось сохранить (например, из-за квоты)
+    STATE.blanks.shift();
+    toast('⚠ Не удалось сохранить. Возможно, превышена квота хранилища.');
+    return;
+  }
+
+  closeModal('uploadBlankModal');
+  toast('✓ Бланк загружен');
+  navigate('blanks');
+}
+
+function downloadBlank(id){
+  const b = STATE.blanks.find(x=>x.id===id);
+  if(!b){toast('Бланк не найден');return}
+
+  try{
+    const a = document.createElement('a');
+    a.href = b.dataUrl;
+    a.download = b.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast('✓ Скачивание началось');
+  } catch(e){
+    console.error('Ошибка скачивания:', e);
+    toast('⚠ Не удалось скачать файл');
+  }
+}
+
+function deleteBlank(id){
+  if(!confirm('Удалить этот бланк?')) return;
+  STATE.blanks = STATE.blanks.filter(b=>b.id!==id);
+  saveBlanks();
+  toast('Бланк удалён');
+  render();
+}
+
+/* ============================================================
    MAIN RENDER
 ============================================================ */
 function render(){
@@ -2037,9 +2430,13 @@ function render(){
   else if(STATE.view==='task') html = renderTaskPage();
   else if(STATE.view==='profile') html = renderProfile();
   else if(STATE.view==='community') html = renderCommunity();
+  else if(STATE.view==='blanks') html = renderBlanks();
   app.innerHTML = html;
 
-  $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===STATE.view||(STATE.view==='task'&&b.dataset.view==='home')));
+  $$('.nav-btn').forEach(b=>{
+    const active = b.dataset.view===STATE.view || (STATE.view==='task' && b.dataset.view==='home');
+    b.classList.toggle('active', active);
+  });
 
   if(STATE.view==='task' && $('#nt_editor')) renderNewTaskEditor();
   if($('#notesPanel').classList.contains('open')) renderNotesPanel();

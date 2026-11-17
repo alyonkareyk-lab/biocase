@@ -18,11 +18,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Inter",Roboto,"Helvetica Neue",Arial,sans-serif;
-    background:var(--bg-soft);color:var(--text);font-size:15px;line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Inter",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg-soft);color:var(--text);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
   a{color:var(--primary);text-decoration:none}
   a:hover{color:var(--primary-dark)}
   button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
@@ -32,8 +28,7 @@
   .header-inner{max-width:1240px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;gap:24px;position:relative}
   .header-bg{position:absolute;inset:0;opacity:.55;pointer-events:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1240' height='110' viewBox='0 0 1240 110'><g fill='none' stroke='%2315803D' stroke-width='1.2' opacity='.35'><path d='M0 55 Q 30 10 60 55 T 120 55 T 180 55 T 240 55 T 300 55 T 360 55 T 420 55 T 480 55 T 540 55 T 600 55 T 660 55 T 720 55 T 780 55 T 840 55 T 900 55 T 960 55 T 1020 55 T 1080 55 T 1140 55 T 1200 55 T 1260 55'/><path d='M0 55 Q 30 100 60 55 T 120 55 T 180 55 T 240 55 T 300 55 T 360 55 T 420 55 T 480 55 T 540 55 T 600 55 T 660 55 T 720 55 T 780 55 T 840 55 T 900 55 T 960 55 T 1020 55 T 1080 55 T 1140 55 T 1200 55 T 1260 55'/></g></svg>");
-    background-repeat:no-repeat;background-size:cover;
-  }
+    background-repeat:no-repeat;background-size:cover}
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:var(--primary);position:relative;z-index:2;cursor:pointer}
   .logo svg{width:32px;height:32px}
   .logo span.sub{font-weight:500;color:var(--text-muted);font-size:13px;margin-left:2px}
@@ -90,8 +85,8 @@
   .tag{padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;background:var(--accent-light);color:var(--accent)}
   .tag.cat{background:var(--primary-light);color:var(--primary-dark)}
   .tag.level-basic{background:#FEF3C7;color:#92400E}
-  .tag.level-adv{background:#FFEDD5;color:#9A3412}
-  .tag.level-rnd{background:#FCE7F3;color:#9D174D}
+  .tag.level-middle{background:#DBEAFE;color:#1E40AF}
+  .tag.level-advanced{background:#FCE7F3;color:#9D174D}
   .tag.status-open{background:#DCFCE7;color:#166534}
   .tag.status-solved{background:#DBEAFE;color:#1E40AF}
   .task-title{font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.35}
@@ -192,6 +187,7 @@
   .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-backdrop.open{display:flex}
   .modal{background:var(--bg);border-radius:var(--radius);padding:24px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+  .modal.modal-lg{max-width:1000px}
   .modal h3{font-size:18px;font-weight:700;margin-bottom:14px}
   .form-group{margin-bottom:14px}
   .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
@@ -207,19 +203,21 @@
   .role-card-title{font-weight:700;font-size:15px;margin-bottom:4px}
   .role-card-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
 
-  .blanks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .blanks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
   .blank-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:all .2s;display:flex;flex-direction:column;gap:10px}
   .blank-card:hover{border-color:var(--primary);box-shadow:var(--shadow)}
   .blank-top{display:flex;gap:12px;align-items:flex-start}
   .blank-icon{width:48px;height:56px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:11px;color:#fff;position:relative}
   .blank-icon.pdf{background:#DC2626}
   .blank-icon.doc{background:#2563EB}
+  .blank-icon.img{background:#7C3AED}
   .blank-icon::after{content:'';position:absolute;top:0;right:0;width:12px;height:12px;background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.4) 50%)}
   .blank-info{flex:1;min-width:0}
   .blank-title{font-weight:600;font-size:15px;margin-bottom:4px;color:var(--text)}
   .blank-meta{font-size:12px;color:var(--text-muted);line-height:1.5}
   .blank-meta span{display:inline-block;margin-right:10px}
-  .blank-actions{display:flex;gap:8px;margin-top:6px;padding-top:10px;border-top:1px dashed var(--border)}
+  .blank-actions{display:flex;gap:8px;margin-top:6px;padding-top:10px;border-top:1px dashed var(--border);flex-wrap:wrap}
+  .blank-thumb{width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid var(--border);margin-top:6px;background:var(--bg-soft)}
 
   .file-drop{border:2px dashed var(--border);border-radius:var(--radius);padding:30px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-soft)}
   .file-drop:hover,.file-drop.dragover{border-color:var(--primary);background:var(--primary-light)}
@@ -300,8 +298,8 @@
     <div class="form-group"><label>Уровень сложности</label>
       <select id="nt_level">
         <option value="basic">Базовый</option>
-        <option value="adv">Продвинутый</option>
-        <option value="rnd">R&amp;D</option>
+        <option value="middle">Средний</option>
+        <option value="advanced">Продвинутый</option>
       </select>
     </div>
     <div class="form-group"><label>Организация-заказчик</label><input id="nt_org" placeholder="BioTech Lab / Администрация" value=""></div>
@@ -324,21 +322,30 @@
 <div class="modal-backdrop" id="uploadBlankModal">
   <div class="modal">
     <h3>📄 Загрузить бланк</h3>
-    <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Доступные форматы: PDF, DOC, DOCX. Максимальный размер: 5 МБ.</p>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Доступные форматы: PDF, DOC, DOCX, PNG, JPG. Максимальный размер: 5 МБ.</p>
     <div class="form-group"><label>Название бланка *</label><input id="blank_title" placeholder="Например: Бланк отчёта по практике"></div>
     <div class="form-group"><label>Описание (необязательно)</label><textarea id="blank_desc" rows="2" placeholder="Кратко опишите назначение бланка"></textarea></div>
     <div class="form-group"><label>Файл *</label>
       <div class="file-drop" id="fileDrop" onclick="document.getElementById('blankFile').click()">
         <div class="file-drop-icon">📎</div>
         <div class="file-drop-text">Нажмите или перетащите файл сюда</div>
-        <div class="file-drop-hint">PDF, DOC, DOCX · до 5 МБ</div>
+        <div class="file-drop-hint">PDF, DOC, DOCX, PNG, JPG · до 5 МБ</div>
       </div>
-      <input type="file" id="blankFile" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleFileSelect(this)">
+      <input type="file" id="blankFile" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" style="display:none" onchange="handleFileSelect(this)">
       <div id="fileSelectedInfo"></div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
       <button class="btn btn-ghost" onclick="closeModal('uploadBlankModal')">Отмена</button>
       <button class="btn btn-primary" onclick="submitBlank()">Загрузить</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="blankPreviewModal">
+  <div class="modal modal-lg" style="background:transparent;padding:10px">
+    <div style="background:var(--bg);border-radius:var(--radius);padding:16px;position:relative">
+      <button class="close-x" onclick="closeModal('blankPreviewModal')" style="position:absolute;top:10px;right:10px;z-index:10">✕</button>
+      <div id="blankPreviewContent"></div>
     </div>
   </div>
 </div>
@@ -353,16 +360,16 @@ const CATEGORIES = {
   all:      {name:'Все направления', icon:'grid',       desc:'Общая лента всех активных кейсов от администрации и партнёров.'},
   genetics: {name:'Генетика',         icon:'chromosome', desc:'Наследование, родословные, хромосомные аномалии, генетическая экспертиза, ДНК-дактилоскопия.'},
   molbio:   {name:'Молекулярная биология', icon:'dna',   desc:'ПЦР, клонирование, редактирование генома, работа с нуклеиновыми кислотами, молекулярная диагностика.'},
-  biochem:  {name:'Биохимия',         icon:'flask',      desc:'Ферментативная кинетика, метаболические пути, очистка белков, качествен реакции, микробиология.'},
+  biochem:  {name:'Биохимия',         icon:'flask',      desc:'Ферментативная кинетика, метаболические пути, очистка белков, качественные реакции, микробиология.'},
   physio:   {name:'Физиология',       icon:'heart',      desc:'Физиология человека и животных, нейрогуморальная регуляция, адаптации, патологическая физиология.'},
   zoo:      {name:'Зоология',         icon:'microscope', desc:'Этология, популяционная экология животных, морфология, систематика, гидробиология.'},
   bot:      {name:'Ботаника',         icon:'leaf',       desc:'Физиология растений, тканевые культуры, фитохимия, фитопатология, адаптации к стрессу.'}
 };
 
 const LEVELS = {
-  basic:{name:'Базовый', cls:'level-basic'},
-  adv:  {name:'Продвинутый', cls:'level-adv'},
-  rnd:  {name:'R&D', cls:'level-rnd'}
+  basic:    {name:'Базовый',       cls:'level-basic'},
+  middle:   {name:'Средний',       cls:'level-middle'},
+  advanced: {name:'Продвинутый',   cls:'level-advanced'}
 };
 
 const CAT_ICONS = {
@@ -385,13 +392,11 @@ const SEED_USERS = [
   {id:'o3',name:'Администрация форума',role:'org',uni:'—',spec:'Модерация и образовательные инициативы',status:'Администратор',avatar:'АФ',solved:0,best:0}
 ];
 
+/* ============================================================
+   ЗАДАЧИ — Базовый (8) / Средний (10) / Продвинутый (6)
+============================================================ */
 const DEFAULT_TASKS = [
-  // ===== ГЕНЕТИКА =====
-  {id:'gen1',title:'Определение типа наследования наследственного заболевания',cat:'genetics',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
-   body:`В медицинско-генетическую консультацию обратилась молодая семейная пара, планирующая рождение ребёнка. В семье мужчины по материнской линии несколько родственников мужского пола страдали гемофилией — наследственным заболеванием, связанным с нарушением свёртываемости крови. Сам мужчина здоров, однако его мать является вероятной носительницей патологического варианта гена. Женщина не имеет подобных заболеваний в семейном анамнезе.
-
-Врач предполагает, что заболевание может передаваться по Х-сцепленному рецессивному типу наследования. Необходимо проанализировать родословную, определить вероятность передачи патологического аллеля потомству и оценить генетические риски для будущего ребёнка.`,
-   solutionsList:[]},
+  // ===== БАЗОВЫЙ =====
   {id:'gen2',title:'Установление родства между биологическими родственниками',cat:'genetics',level:'basic',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`В лабораторию обратились два человека, желающие установить биологическое родство. Мужчина сомневается, является ли он биологическим отцом ребёнка. Необходимо провести исследование биологических образцов, полученных от предполагаемого отца, матери и ребёнка.
 
@@ -402,8 +407,6 @@ const DEFAULT_TASKS = [
 
 Для подтверждения диагноза необходимо исследовать хромосомный набор ребёнка, определить количество хромосом и установить, связаны ли изменения с дополнительной хромосомой или структурной перестройкой хромосом.`,
    solutionsList:[]},
-
-  // ===== ЗООЛОГИЯ =====
   {id:'zoo1',title:'Причина массовой гибели рыб в искусственном водоёме',cat:'zoo',level:'basic',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`Владелец рыбоводческого хозяйства заметил, что в одном из искусственных водоёмов начали массово погибать рыбы. Оставшиеся особи стали вести себя необычно: поднимаются к поверхности воды, часто открывают рот и стараются находиться возле мест поступления воды.
 
@@ -414,15 +417,6 @@ const DEFAULT_TASKS = [
 
 Предполагается, что на участке появился насекомый-вредитель, способный быстро размножаться и наносить значительный ущерб урожаю. Для выбора подходящего способа борьбы необходимо определить вид насекомого, изучить особенности его строения и жизненного цикла.`,
    solutionsList:[]},
-  {id:'zoo3',title:'Оценка численности популяции животных в природном водоёме',cat:'zoo',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
-   body:`Экологическая служба проводит исследование состояния небольшой популяции лягушек, обитающей в окрестностях природного водоёма. За последние несколько лет местные жители стали реже наблюдать земноводных, что может свидетельствовать о сокращении их численности.
-
-Необходимо оценить примерное количество особей, определить плотность популяции и выяснить, какие факторы окружающей среды могут влиять на её сокращение.
-
-Проводить полный отлов всех животных невозможно, поэтому исследователям необходимо выбрать метод, позволяющий оценить численность популяции без изъятия всех особей из природной среды.`,
-   solutionsList:[]},
-
-  // ===== БОТАНИКА =====
   {id:'bot1',title:'Почему у комнатного растения желтеют листья?',cat:'bot',level:'basic',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`В лабораторию обратилась сотрудница ботанического сада с проблемой: у нескольких комнатных растений начали постепенно желтеть листья. При этом растения продолжают получать достаточное количество воды и находятся в помещении с подходящим освещением.
 
@@ -430,66 +424,85 @@ const DEFAULT_TASKS = [
 
 Необходимо определить возможную причину изменения окраски листьев, изучить состояние растений и предложить способы восстановления их нормального роста.`,
    solutionsList:[]},
-  {id:'bot2',title:'Почему погибает рассада томатов?',cat:'bot',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
-   body:`В тепличном хозяйстве наблюдается массовое поражение рассады томатов. На листьях появляются бурые пятна, которые постепенно увеличиваются и распространяются на стебли. Некоторые растения полностью погибают.
-
-Агроном предполагает, что причиной заболевания может быть фитопатогенный гриб или грибоподобный организм. Необходимо определить возбудителя заболевания, изучить поражённые ткани и установить способ распространения инфекции.`,
-   solutionsList:[]},
   {id:'bot3',title:'Почему семена не прорастают после посева?',cat:'bot',level:'basic',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`В лабораторию поступила партия семян пшеницы, предназначенная для весеннего посева. После высевания в почву большая часть семян не проросла, а появившиеся проростки развивались медленно и имели слабую корневую систему.
 
 Фермер предполагает, что причиной может быть низкая всхожесть семян или нарушение условий их хранения. Необходимо определить, сохранили ли семена жизнеспособность, и выяснить, какие факторы могли повлиять на процесс прорастания.`,
    solutionsList:[]},
-
-  // ===== МОЛЕКУЛЯРНАЯ БИОЛОГИЯ =====
-  {id:'mol1',title:'Мониторинг вирусной нагрузки при хронической инфекции',cat:'molbio',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
-   body:`Пациент с подтвержденным диагнозом хронического гепатита C получает противовирусную терапию. Через 4 недели лечения необходимо оценить эффективность терапии. Задача лаборатории — не просто подтвердить наличие вируса (что уже известно), а измерить его количество в крови (вирусную нагрузку). Если концентрация РНК вируса не снижается или снижается недостаточно, схему лечения необходимо менять. Метод должен обладать высокой чувствительностью, чтобы обнаружить даже низкие концентрации вируса, и давать точные количественные результаты для отслеживания динамики.`,
-   solutionsList:[]},
-  {id:'mol2',title:'Выбор антидепрессанта с учётом полиморфизма генов CYP2D6 и CYP2C19',cat:'molbio',level:'rnd',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
-   body:`Пациентка 42 лет с диагнозом «рекуррентное депрессивное расстройство, текущий эпизод средней степени» направлена к психиатру. Ранее она принимала сертралин в стандартной дозе (50 мг/сут) в течение 6 недель: эффекта не было, но появились выраженная тошнота и головокружение, из-за чего препарат был отменён. Второй эпизод лечили пароксетином (20 мг/сут): через 10 дней развилась выраженная сонливость и спутанность, потребовалась госпитализация. Сейчас врач рассматривает возможность назначения нового антидепрессанта, но опасается повторения побочных эффектов. Пациентка хочет понять, можно ли заранее подобрать препарат, который ей подойдёт.
-
-В лаборатории доступно фармакогенетическое тестирование генов CYP2D6 и CYP2C19, которые кодируют ферменты, метаболизирующие примерно половину всех антидепрессантов. Известно, что пароксетин и венлафаксин метаболизируются преимущественно CYP2D6, а сертралин и циталопрам/эсциталопрам — преимущественно CYP2C19.`,
-   solutionsList:[]},
-  {id:'mol3',title:'Подтверждение диагноза ВИЧ-инфекции у взрослого',cat:'molbio',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
-   body:`Пациент 29 лет сдал анализ на ВИЧ в рамках профилактического обследования. Иммуноферментный анализ дал положительный результат. Пациент в панике: он не знает, действительно ли он инфицирован, или это ложноположительная реакция. Врач объясняет, что скрининговый ИФА лишь предполагает наличие антител, и для окончательного диагноза нужен подтверждающий метод, который покажет, к каким именно белкам вируса образовались антитела. Нужен метод, способный разделить белки ВИЧ по размеру и проверить, реагирует ли сыворотка пациента на каждый из них.`,
-   solutionsList:[]},
-
-  // ===== БИОХИМИЯ =====
   {id:'bio1',title:'Как доказать, что в растворе есть белок?',cat:'biochem',level:'basic',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`В лабораторию принесли раствор, в котором, по словам заказчика, содержится белок (предположительно альбумин). Раствор прозрачный, без цвета и запаха. Нужно быстро проверить, есть ли в нём белок, не используя дорогих приборов. В распоряжении есть только несколько пробирок и набор реактивов.
 
 Необходимо выбрать и провести качественные реакции на белок, позволяющие подтвердить его наличие в растворе, и объяснить биохимическую основу выбранных методов.`,
    solutionsList:[]},
-  {id:'bio2',title:'Почему не растёт пшеница на поле?',cat:'biochem',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+  {id:'t4',title:'Идентификация видоспецифичных маркеров у грызунов',cat:'zoo',level:'basic',status:'open',org:'BioTech Lab',authorId:'o1',date:'8 ноября 2026',solutions:0,
+   body:`Необходимо предложить набор молекулярных маркеров для различения трёх криптических видов полёвок рода [i]Microtus[/i] по образцам шерсти из погадок хищников.
+
+[b]Ограничения:[/b]
+[list]
+[*]ДНК сильно деградирована (фрагменты 100–200 п.н.)
+[*]Нужно 2–3 локуса с высокой видовой специфичностью
+[/list]
+
+Предложите локусы и стратегию ПЦР.`,
+   solutionsList:[]},
+
+  // ===== СРЕДНИЙ =====
+  {id:'gen1',title:'Определение типа наследования наследственного заболевания',cat:'genetics',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+   body:`В медицинско-генетическую консультацию обратилась молодая семейная пара, планирующая рождение ребёнка. В семье мужчины по материнской линии несколько родственников мужского пола страдали гемофилией — наследственным заболеванием, связанным с нарушением свёртываемости крови. Сам мужчина здоров, однако его мать является вероятной носительницей патологического варианта гена. Женщина не имеет подобных заболеваний в семейном анамнезе.
+
+Врач предполагает, что заболевание может передаваться по Х-сцепленному рецессивному типу наследования. Необходимо проанализировать родословную, определить вероятность передачи патологического аллеля потомству и оценить генетические риски для будущего ребёнка.`,
+   solutionsList:[]},
+  {id:'zoo3',title:'Оценка численности популяции животных в природном водоёме',cat:'zoo',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+   body:`Экологическая служба проводит исследование состояния небольшой популяции лягушек, обитающей в окрестностях природного водоёма. За последние несколько лет местные жители стали реже наблюдать земноводных, что может свидетельствовать о сокращении их численности.
+
+Необходимо оценить примерное количество особей, определить плотность популяции и выяснить, какие факторы окружающей среды могут влиять на её сокращение.
+
+Проводить полный отлов всех животных невозможно, поэтому исследователям необходимо выбрать метод, позволяющий оценить численность популяции без изъятия всех особей из природной среды.`,
+   solutionsList:[]},
+  {id:'bot2',title:'Почему погибает рассада томатов?',cat:'bot',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+   body:`В тепличном хозяйстве наблюдается массовое поражение рассады томатов. На листьях появляются бурые пятна, которые постепенно увеличиваются и распространяются на стебли. Некоторые растения полностью погибают.
+
+Агроном предполагает, что причиной заболевания может быть фитопатогенный гриб или грибоподобный организм. Необходимо определить возбудителя заболевания, изучить поражённые ткани и установить способ распространения инфекции.`,
+   solutionsList:[]},
+  {id:'mol1',title:'Мониторинг вирусной нагрузки при хронической инфекции',cat:'molbio',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+   body:`Пациент с подтвержденным диагнозом хронического гепатита C получает противовирусную терапию. Через 4 недели лечения необходимо оценить эффективность терапии. Задача лаборатории — не просто подтвердить наличие вируса (что уже известно), а измерить его количество в крови (вирусную нагрузку). Если концентрация РНК вируса не снижается или снижается недостаточно, схему лечения необходимо менять. Метод должен обладать высокой чувствительностью, чтобы обнаружить даже низкие концентрации вируса, и давать точные количественные результаты для отслеживания динамики.`,
+   solutionsList:[]},
+  {id:'mol3',title:'Подтверждение диагноза ВИЧ-инфекции у взрослого',cat:'molbio',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+   body:`Пациент 29 лет сдал анализ на ВИЧ в рамках профилактического обследования. Иммуноферментный анализ дал положительный результат. Пациент в панике: он не знает, действительно ли он инфицирован, или это ложноположительная реакция. Врач объясняет, что скрининговый ИФА лишь предполагает наличие антител, и для окончательного диагноза нужен подтверждающий метод, который покажет, к каким именно белкам вируса образовались антитела. Нужен метод, способный разделить белки ВИЧ по размеру и проверить, реагирует ли сыворотка пациента на каждый из них.`,
+   solutionsList:[]},
+  {id:'bio2',title:'Почему не растёт пшеница на поле?',cat:'biochem',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`На поле, где раньше хорошо росла пшеница, второй год подряд всходы слабые, листья желтеют, урожайность упала почти вдвое. Агроном заметил, что на корнях растений есть вздутия и наросты. Он подозревает, что причина — бактерии, живущие в почве. Нужно подтвердить, что это бактериальное заболевание, определить возбудителя и решить, что делать с полем.
 
 Необходимо выделить микроорганизмы из поражённых тканей, изучить их морфологию и биохимические свойства, а также предложить агротехнические меры для восстановления плодородия почвы.`,
    solutionsList:[]},
-  {id:'bio3',title:'Почему загрязнилась вода в пруду?',cat:'biochem',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+  {id:'bio3',title:'Почему загрязнилась вода в пруду?',cat:'biochem',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`В пруду рядом с фермой рыба начала гибнуть, вода стала мутной и зеленоватой, появился неприятный запах. Фермер утверждает, что в пруд ничего не сбрасывал. Экологи подозревают, что причина — бактерии, которые попали в воду с полей (стоки с навозом) и начали активно размножаться, потребляя кислород. Нужно определить, есть ли в воде бактерии кишечной группы и насколько высока их концентрация.
 
 Необходимо провести микробиологический анализ воды: отобрать пробы, выполнить посев на дифференциально-диагностические среды, определить коли-индекс и коли-титр, оценить степень загрязнения и сделать заключение о безопасности водоёма.`,
    solutionsList:[]},
-
-  // ===== ФИЗИОЛОГИЯ =====
-  {id:'phy1',title:'Почему стайер «сгорел» на дистанции?',cat:'physio',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+  {id:'phy1',title:'Почему стайер «сгорел» на дистанции?',cat:'physio',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`Бегун на 5000 м на соревнованиях начал очень быстро — первый километр пробежал значительно быстрее своего обычного темпа. К третьему километру у него появились резкая слабость, головокружение, тошнота, «ватные ноги». Он сошёл с дистанции. Тренер в недоумении: спортсмен хорошо подготовлен, тренировался месяцами. Нужно разобраться, какие физиологические механизмы привели к срыву и как скорректировать тактику.
 
 Необходимо проанализировать вклад анаэробного и аэробного энергообеспечения, роль гликогена, лактата и кислородного долга, а также предложить стратегию распределения усилий на дистанции.`,
    solutionsList:[]},
-  {id:'phy2',title:'Почему у пациента частое мочеиспускание и жажда?',cat:'physio',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+  {id:'phy2',title:'Почему у пациента частое мочеиспускание и жажда?',cat:'physio',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`Пациент 52 лет жалуется на постоянную жажду (пьёт до 5 л воды в день), частое мочеиспускание (особенно ночью) и общую слабость. За последний месяц похудел на 5 кг, хотя аппетит хороший. Врач подозревает нарушение углеводного обмена (возможно, сахарный диабет). Нужно понять, какие физиологические механизмы вызывают эти симптомы, и какие методы помогут подтвердить гипотезу.
 
 Необходимо объяснить связь между гипергликемией, осмотическим диурезом, полидипсией и потерей массы тела, а также предложить план лабораторного обследования.`,
    solutionsList:[]},
-  {id:'phy3',title:'Почему турист в горах замёрз, хотя было не так уж холодно?',cat:'physio',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+  {id:'phy3',title:'Почему турист в горах замёрз, хотя было не так уж холодно?',cat:'physio',level:'middle',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
    body:`Группа туристов попала в горы, где температура воздуха была около +5 °C, но дул сильный ветер и шёл мокрый снег. Один из туристов промок, устал и через некоторое время начал дрожать, у него появилась сонливость и спутанность речи. Товарищи заметили, что он перестал дрожать, хотя всё ещё жаловался на холод. Врач группы заподозрил гипотермию (переохлаждение) и сказал, что прекращение дрожи — тревожный признак, а не улучшение. Нужно разобраться, как организм борется с холодом и почему на определённом этапе защитные механизмы истощаются.
 
 Необходимо описать механизмы термогенеза (дрожь, несократительный термогенез, вазоконстрикция), стадии гипотермии и объяснить, почему прекращение мышечной дрожи свидетельствует о переходе в тяжёлую стадию.`,
    solutionsList:[]},
 
-  // ===== СТАРЫЕ ДЕМО-ЗАДАЧИ =====
-  {id:'t1',title:'Оптимизация ПЦР-праймеров для амплификации гена GFP',cat:'molbio',level:'adv',status:'open',org:'BioTech Lab',authorId:'o1',date:'14 ноября 2026',solutions:3,
+  // ===== ПРОДВИНУТЫЙ =====
+  {id:'mol2',title:'Выбор антидепрессанта с учётом полиморфизма генов CYP2D6 и CYP2C19',cat:'molbio',level:'advanced',status:'open',org:'Администрация форума',authorId:'o3',date:'17 ноября 2026',solutions:0,
+   body:`Пациентка 42 лет с диагнозом «рекуррентное депрессивное расстройство, текущий эпизод средней степени» направлена к психиатру. Ранее она принимала сертралин в стандартной дозе (50 мг/сут) в течение 6 недель: эффекта не было, но появились выраженная тошнота и головокружение, из-за чего препарат был отменён. Второй эпизод лечили пароксетином (20 мг/сут): через 10 дней развилась выраженная сонливость и спутанность, потребовалась госпитализация. Сейчас врач рассматривает возможность назначения нового антидепрессанта, но опасается повторения побочных эффектов. Пациентка хочет понять, можно ли заранее подобрать препарат, который ей подойдёт.
+
+В лаборатории доступно фармакогенетическое тестирование генов CYP2D6 и CYP2C19, которые кодируют ферменты, метаболизирующие примерно половину всех антидепрессантов. Известно, что пароксетин и венлафаксин метаболизируются преимущественно CYP2D6, а сертралин и циталопрам/эсциталопрам — преимущественно CYP2C19.`,
+   solutionsList:[]},
+  {id:'t1',title:'Оптимизация ПЦР-праймеров для амплификации гена GFP',cat:'molbio',level:'advanced',status:'open',org:'BioTech Lab',authorId:'o1',date:'14 ноября 2026',solutions:3,
    body:`[b]Задача:[/b] Необходимо подобрать праймеры для амплификации гена [i]GFP[/i] из плазмиды pEGFP-N1. Длина целевого фрагмента — 717 п.н.
 
 [b]Исходные данные:[/b]
@@ -524,7 +537,7 @@ const DEFAULT_TASKS = [
 Рекомендую добавить DMSO 3–5% в реакционную смесь.`},
      {id:'s3',authorId:'u4',date:'16 ноября 2026',best:false,body:`Поддержу вариант Анны. Добавлю, что для проверки специфичности стоит выполнить [i]in silico[/i] BLAST против генома [i]E. coli[/i] DH5α.`}
    ]},
-  {id:'t2',title:'Кинетика ингибирования фермента малонатом',cat:'biochem',level:'basic',status:'solved',org:'Администрация форума',authorId:'o3',date:'10 ноября 2026',solutions:2,
+  {id:'t2',title:'Кинетика ингибирования фермента малонатом',cat:'biochem',level:'advanced',status:'solved',org:'Администрация форума',authorId:'o3',date:'10 ноября 2026',solutions:2,
    body:`Классическая задача по ферментативной кинетике.
 
 Сукцинатдегидрогеназа катализирует окисление сукцината в фумарат. Малоновая кислота (HOOC-CH[sub]2[/sub]-COOH) является конкурентным ингибитором.
@@ -549,7 +562,7 @@ K[sub]i[/sub] = [I] / (α - 1), где α = K[sub]m,app[/sub]/K[sub]m[/sub] = 2.
 K[sub]i[/sub] = 10 / 1.4 ≈ [b]7.1 мМ[/b]`},
      {id:'s5',authorId:'u1',date:'12 ноября 2026',best:false,body:`Подтверждаю расчёты Игоря. Добавлю биологический контекст: именно на этом примере Кребс в 1930-х доказал существование цикла трикарбоновых кислот.`}
    ]},
-  {id:'t3',title:'Этологический анализ: адаптивное значение токования у тетерева',cat:'zoo',level:'adv',status:'open',org:'Администрация форума',authorId:'o3',date:'12 ноября 2026',solutions:1,
+  {id:'t3',title:'Этологический анализ: адаптивное значение токования у тетерева',cat:'zoo',level:'advanced',status:'open',org:'Администрация форума',authorId:'o3',date:'12 ноября 2026',solutions:1,
    body:`Наблюдения в популяции тетерева-косача ([i]Lyrurus tetrix[/i]) в Карелии показали, что на току из 12 самцов устойчивый центральный статус имеют только 3.
 
 [b]Вопросы:[/b]
@@ -570,18 +583,7 @@ K[sub]i[/sub] = 10 / 1.4 ≈ [b]7.1 мМ[/b]`},
 
 Высокая дисперсия репродуктивного успеха характерна для полигинных систем (параметр I = σ[i]2[/i]/μ[i]2[/i] ≈ 4.3). Гипотеза: [i]hotspot[/i]-модель — самки выбирают участок по плотности кормовой базы, а самцы конкурируют за этот ресурс.`}
    ]},
-  {id:'t4',title:'Идентификация видоспецифичных маркеров у грызунов',cat:'zoo',level:'basic',status:'open',org:'BioTech Lab',authorId:'o1',date:'8 ноября 2026',solutions:0,
-   body:`Необходимо предложить набор молекулярных маркеров для различения трёх криптических видов полёвок рода [i]Microtus[/i] по образцам шерсти из погадок хищников.
-
-[b]Ограничения:[/b]
-[list]
-[*]ДНК сильно деградирована (фрагменты 100–200 п.н.)
-[*]Нужно 2–3 локуса с высокой видовой специфичностью
-[/list]
-
-Предложите локусы и стратегию ПЦР.`,
-   solutionsList:[]},
-  {id:'t5',title:'Фитохимический скрининг экстрактов Rhodiola rosea',cat:'bot',level:'rnd',status:'open',org:'GreenPharm Research',authorId:'o2',date:'13 ноября 2026',solutions:2,
+  {id:'t5',title:'Фитохимический скрининг экстрактов Rhodiola rosea',cat:'bot',level:'advanced',status:'open',org:'GreenPharm Research',authorId:'o2',date:'13 ноября 2026',solutions:2,
    body:`Наша лаборатория исследует адаптагенные свойства родиолы розовой ([i]Rhodiola rosea[/i] L.).
 
 [b]Задача:[/b] Разработать протокол ВЭЖХ-анализа для одновременного количественного определения:
@@ -617,7 +619,7 @@ LOD для салидрозида при такой схеме — около 0.
 [*]рутин: 611→301
 [/list]`}
    ]},
-  {id:'t6',title:'Протокол микроклонального размножения Vaccinium corymbosum',cat:'bot',level:'adv',status:'solved',org:'GreenPharm Research',authorId:'o2',date:'5 ноября 2026',solutions:2,
+  {id:'t6',title:'Протокол микроклонального размножения Vaccinium corymbosum',cat:'bot',level:'advanced',status:'solved',org:'GreenPharm Research',authorId:'o2',date:'5 ноября 2026',solutions:2,
    body:`Необходимо разработать протокол [i]in vitro[/i] размножения голубики высокорослой ([i]Vaccinium corymbosum[/i], сорт Bluecrop).
 
 [b]Этапы:[/b]
@@ -652,15 +654,37 @@ const DEFAULT_NOTES = [
   {id:'n2',title:'Идеи по задаче Rhodiola',body:'Попробовать UHPLC — короче колонка, выше разрешение.\nПроверить колонку Kinetex C18 2.6 мкм.',linkedTask:'t5',date:'14.11.2026'}
 ];
 
-function makeTextDataURL(text){ return 'data:text/plain;charset=utf-8,' + encodeURIComponent(text); }
+/* ============================================================
+   БЛАНКИ — реальные ссылки на allwebs.ru
+============================================================ */
+const BLANK_TEACHER_URL = 'https://allwebs.ru/images/2026/11/17/Uom-VxYrU6GmqY2LYvjsFg-0NJlbbfOeu-Wm7xM8yJ4cUsIE_S2elcrBq2gHIg4K-Os6lW9zk5MgEDsyxawZ6xmz99e162a2813f9659.jpg';
+const BLANK_STUDENT_URL = 'https://allwebs.ru/images/2026/11/17/aGM0VRLQjpQJQVAz_A4BzTKv7IaUjWn8_WF-GzNUzas_1QzbCPbM_Y8jpfCkliKC0q8kG4ztGBoej0HqKhef_UHmc1ed2ccb5df92e5c.jpg';
 
 const DEFAULT_BLANKS = [
-  {id:'b1',title:'Бланк отчёта по производственной практике',desc:'Унифицированная форма отчёта для студентов биологических специальностей.',filename:'Otchet_po_praktike.docx',type:'docx',size:24500,
-   dataUrl: makeTextDataURL('[ДЕМО-ФАЙЛ] Бланк отчёта по производственной практике'),uploadedBy:'o3',uploadedAt:'10 ноября 2026'},
-  {id:'b2',title:'Форма заявки на публикацию кейса',desc:'Стандартная форма для организаций-партнёров.',filename:'Zayavka_na_keys.pdf',type:'pdf',size:18200,
-   dataUrl: makeTextDataURL('[ДЕМО-ФАЙЛ] Заявка на публикацию кейса'),uploadedBy:'o3',uploadedAt:'12 ноября 2026'},
-  {id:'b3',title:'Шаблон описания задачи для R&D-кейса',desc:'Расширенный шаблон для сложных научно-исследовательских задач.',filename:'RD_case_template.doc',type:'doc',size:31400,
-   dataUrl: makeTextDataURL('[ДЕМО-ФАЙЛ] Шаблон описания R&D кейса'),uploadedBy:'o1',uploadedAt:'14 ноября 2026'}
+  {
+    id:'b_teacher',
+    title:'Бланк оценки проделанной студентами работы',
+    desc:'Для преподавателей и организаций. Содержит 6 критериев оценки (от 1 до 5 баллов), суммарный балл /30 и шкалу перевода в итоговую оценку. Заполняется проверяющим после защиты решения ситуационной задачи.',
+    filename:'blank_ocenki_raboty_studentov.jpg',
+    type:'image/jpeg',
+    size:0,
+    url: BLANK_TEACHER_URL,
+    isImage: true,
+    uploadedBy:'o3',
+    uploadedAt:'17 ноября 2026'
+  },
+  {
+    id:'b_student',
+    title:'Бланк решения ситуационной задачи',
+    desc:'Для студентов и решающих команд. Включает 6 разделов: описание задачи, области знаний, методики, варианты решения, трудности и риски. Заполняется участниками при работе над кейсом.',
+    filename:'blank_resheniya_situacionnoy_zadachi.jpg',
+    type:'image/jpeg',
+    size:0,
+    url: BLANK_STUDENT_URL,
+    isImage: true,
+    uploadedBy:'o3',
+    uploadedAt:'17 ноября 2026'
+  }
 ];
 
 /* ============================================================
@@ -832,6 +856,7 @@ function statusTag(st){ if(st==='open') return '<span class="tag status-open">�
 function catTag(cat){ return '<span class="tag cat">'+CATEGORIES[cat].name+'</span>'; }
 
 function formatFileSize(bytes){
+  if(!bytes || bytes === 0) return '—';
   if(bytes < 1024) return bytes + ' Б';
   if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' КБ';
   return (bytes/(1024*1024)).toFixed(2) + ' МБ';
@@ -848,6 +873,7 @@ function getFileTypeIcon(type, ext){
   const e = String(ext||'').toLowerCase();
   if(t.includes('pdf') || e === 'pdf') return {cls:'pdf', label:'PDF'};
   if(t.includes('word') || e === 'doc' || e === 'docx') return {cls:'doc', label:e.toUpperCase()};
+  if(t.includes('image') || e === 'png' || e === 'jpg' || e === 'jpeg') return {cls:'img', label:e.toUpperCase()};
   return {cls:'doc', label:'FILE'};
 }
 
@@ -913,7 +939,7 @@ function renderHome(){
 
     <div class="filters-row">
       <span class="filters-label">Сложность:</span>
-      ${['all','basic','adv','rnd'].map(l=>`<span class="chip ${STATE.levelFilter===l?'active':''}" onclick="setLevel('${l}')">${l==='all'?'Все':(LEVELS[l]?LEVELS[l].name:'Все')}</span>`).join('')}
+      ${['all','basic','middle','advanced'].map(l=>`<span class="chip ${STATE.levelFilter===l?'active':''}" onclick="setLevel('${l}')">${l==='all'?'Все':(LEVELS[l]?LEVELS[l].name:'Все')}</span>`).join('')}
       <span class="filters-label" style="margin-left:10px">Статус:</span>
       ${['all','open','solved'].map(s=>`<span class="chip ${STATE.statusFilter===s?'active':''}" onclick="setStatus('${s}')">${s==='all'?'Все':s==='open'?'Открыта':'Есть лучшее решение'}</span>`).join('')}
     </div>
@@ -1034,9 +1060,9 @@ function renderTaskPage(){
           `).join('')}
         </div>
         <div class="side-card">
-          <h3>💡 Совет</h3>
-          <div style="font-size:13px;color:var(--text-muted);line-height:1.55">
-            Используйте BB-коды для оформления формул: <code>[sub]...[/sub]</code> и <code>[sup]...[/sup]</code>. Для последовательностей ДНК — <code>[code]...[/code]</code>.
+          <h3>📄 Полезный бланк</h3>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.55;margin-bottom:8px">
+            Оформляйте решение по <a href="#" onclick="navigate('blanks');return false">бланку ситуационной задачи</a>
           </div>
         </div>
       </aside>
@@ -1582,10 +1608,10 @@ function setSearchRole(r){STATE.searchRole=r;render()}
    BLANKS
 ============================================================ */
 function renderBlanks(){
-  const blanks = STATE.blanks.slice().sort((a,b)=>(b.uploadedAt||'').localeCompare(a.uploadedAt||''));
+  const blanks = STATE.blanks.slice();
   return `
     <h1 class="page-title">📄 Бланки и документы</h1>
-    <p class="page-sub">Типовые формы, шаблоны отчётов и бланки для работы с платформой</p>
+    <p class="page-sub">Типовые формы для оценки работы студентов и оформления решений ситуационных задач</p>
     ${canUploadBlanks()?`
       <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
         <button class="btn btn-primary" onclick="openUploadBlankModal()">
@@ -1629,18 +1655,39 @@ function blankCardHTML(b){
           <div class="blank-title">${escapeHtml(b.title)}</div>
           <div class="blank-meta">
             <span>📎 ${escapeHtml(b.filename)}</span><br>
-            <span>💾 ${formatFileSize(b.size)}</span>
+            <span>💾 ${b.isImage ? 'Изображение' : formatFileSize(b.size)}</span>
           </div>
           ${b.desc?`<div style="font-size:13px;color:var(--text-muted);margin-top:6px;line-height:1.5">${escapeHtml(b.desc)}</div>`:''}
         </div>
       </div>
+      ${b.isImage && b.url ? `<img src="${b.url}" alt="${escapeHtml(b.title)}" class="blank-thumb" onerror="this.style.display='none'" onclick="previewBlankImage('${b.id}')">` : ''}
       <div class="blank-meta" style="font-size:12px;color:var(--text-muted)">👤 ${escapeHtml(author.name)} · 📅 ${b.uploadedAt}</div>
       <div class="blank-actions">
-        <button class="btn btn-primary btn-sm" onclick="downloadBlank('${b.id}')">⬇ Скачать</button>
+        ${b.isImage ? `
+          <button class="btn btn-soft btn-sm" onclick="previewBlankImage('${b.id}')">👁 Просмотр</button>
+          <a class="btn btn-primary btn-sm" href="${b.url}" download="${escapeHtml(b.filename)}" target="_blank" rel="noopener">⬇ Скачать</a>
+        ` : `
+          <button class="btn btn-primary btn-sm" onclick="downloadBlank('${b.id}')">⬇ Скачать</button>
+        `}
         ${canDelete?`<button class="btn btn-ghost btn-sm" onclick="deleteBlank('${b.id}')" style="color:var(--danger);margin-left:auto">🗑 Удалить</button>`:''}
       </div>
     </div>
   `;
+}
+
+function previewBlankImage(id){
+  const b = STATE.blanks.find(x=>x.id===id);
+  if(!b) return;
+  const content = $('#blankPreviewContent');
+  content.innerHTML = `
+    <h3 style="margin-bottom:10px">${escapeHtml(b.title)}</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">${escapeHtml(b.desc||'')}</p>
+    <img src="${b.url}" alt="${escapeHtml(b.title)}" style="max-width:100%;border-radius:8px;border:1px solid var(--border);display:block;margin:0 auto">
+    <div style="margin-top:12px;text-align:center">
+      <a class="btn btn-primary btn-sm" href="${b.url}" download="${escapeHtml(b.filename)}" target="_blank" rel="noopener">⬇ Скачать оригинал</a>
+    </div>
+  `;
+  openModal('blankPreviewModal');
 }
 
 function openUploadBlankModal(){
@@ -1677,9 +1724,9 @@ function handleFileSelect(input){
 
 function processFile(file){
   const ext = getFileExtension(file.name);
-  const allowedExt = ['pdf','doc','docx'];
-  const allowedType = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  if(!allowedExt.includes(ext) && !allowedType.includes(file.type)){ toast('⚠ Допустимы только файлы PDF, DOC, DOCX'); return; }
+  const allowedExt = ['pdf','doc','docx','png','jpg','jpeg'];
+  const allowedType = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','image/png','image/jpeg'];
+  if(!allowedExt.includes(ext) && !allowedType.includes(file.type)){ toast('⚠ Допустимы только файлы PDF, DOC, DOCX, PNG, JPG'); return; }
   const MAX_SIZE = 5 * 1024 * 1024;
   if(file.size > MAX_SIZE){ toast('⚠ Файл слишком большой (максимум 5 МБ)'); return; }
   const reader = new FileReader();
@@ -1722,7 +1769,18 @@ function submitBlank(){
   const desc = $('#blank_desc').value.trim();
   if(!STATE._selectedFile){ toast('Выберите файл для загрузки'); return; }
   const f = STATE._selectedFile;
-  const newBlank = {id:'b'+Date.now(),title,desc,filename:f.name,type:f.type,size:f.size,dataUrl:f.dataUrl,uploadedBy:STATE.currentUserId,uploadedAt:'17 ноября 2026'};
+  const isImage = f.type.startsWith('image/');
+  const newBlank = {
+    id:'b'+Date.now(),
+    title, desc,
+    filename:f.name,
+    type:f.type,
+    size:f.size,
+    url: f.dataUrl,
+    isImage: isImage,
+    uploadedBy:STATE.currentUserId,
+    uploadedAt:'17 ноября 2026'
+  };
   STATE.blanks.unshift(newBlank);
   const saved = saveBlanks();
   if(!saved){ STATE.blanks.shift(); toast('⚠ Не удалось сохранить. Возможно, превышена квота хранилища.'); return; }
@@ -1736,7 +1794,7 @@ function downloadBlank(id){
   if(!b){toast('Бланк не найден');return}
   try{
     const a = document.createElement('a');
-    a.href = b.dataUrl;
+    a.href = b.url;
     a.download = b.filename;
     document.body.appendChild(a);
     a.click();

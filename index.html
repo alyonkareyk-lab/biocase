@@ -114,6 +114,7 @@
   .avatar.lg{width:80px;height:80px;font-size:28px}
   .avatar.md{width:40px;height:40px;font-size:15px}
   .avatar.org{background:var(--accent)}
+  .avatar.guest{background:var(--text-muted)}
 
   /* ---------- LAYOUT ---------- */
   .container{max-width:1240px;margin:0 auto;padding:28px 24px}
@@ -364,6 +365,7 @@
     font-size:12px;font-weight:600;margin-bottom:8px;
   }
   .profile-info .role.org{background:var(--accent-light);color:var(--accent)}
+  .profile-info .role.guest{background:#F1F5F9;color:var(--text-muted)}
   .profile-info .meta{font-size:13px;color:var(--text-muted)}
   .profile-stats{
     display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
@@ -462,7 +464,7 @@
   .modal-backdrop.open{display:flex}
   .modal{
     background:var(--bg);border-radius:var(--radius);
-    padding:24px;max-width:520px;width:100%;
+    padding:24px;max-width:560px;width:100%;
     max-height:90vh;overflow-y:auto;
   }
   .modal h3{font-size:18px;font-weight:700;margin-bottom:14px}
@@ -479,6 +481,28 @@
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus{
     border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);
   }
+
+  /* ---------- REGISTER ROLE CARDS ---------- */
+  .role-cards{
+    display:grid;grid-template-columns:1fr 1fr;gap:12px;
+    margin-bottom:16px;
+  }
+  .role-card{
+    padding:20px;border:2px solid var(--border);
+    border-radius:var(--radius);cursor:pointer;
+    transition:all .2s;text-align:center;
+  }
+  .role-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .role-card.selected{border-color:var(--primary);background:var(--primary-light)}
+  .role-card-icon{
+    width:48px;height:48px;border-radius:12px;
+    background:var(--bg-soft);margin:0 auto 10px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--primary);
+  }
+  .role-card.selected .role-card-icon{background:var(--primary);color:#fff}
+  .role-card-title{font-weight:700;font-size:15px;margin-bottom:4px}
+  .role-card-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
 
   /* ---------- EMPTY ---------- */
   .empty{
@@ -504,6 +528,7 @@
     .cat-bar{grid-template-columns:repeat(2,1fr)}
     .nav{display:none}
     .profile-stats{grid-template-columns:repeat(2,1fr)}
+    .role-cards{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -530,7 +555,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         Новая задача
       </button>
-      <div class="user-chip" onclick="navigate('profile')" id="userChip"></div>
+      <div id="userChipWrap"></div>
     </div>
   </div>
 </header>
@@ -573,7 +598,7 @@
     </div>
     <div class="form-group">
       <label>Организация-заказчик</label>
-      <input id="nt_org" placeholder="BioTech Lab / Администрация" value="BioTech Lab">
+      <input id="nt_org" placeholder="BioTech Lab / Администрация" value="">
     </div>
     <div class="form-group">
       <label>Условие задачи (BB-коды разрешены)</label>
@@ -586,16 +611,43 @@
   </div>
 </div>
 
-<!-- Modal: login -->
-<div class="modal-backdrop" id="loginModal">
+<!-- Modal: register -->
+<div class="modal-backdrop" id="registerModal">
   <div class="modal">
-    <h3>🔑 Войти как…</h3>
-    <p style="color:var(--text-muted);font-size:14px;margin-bottom:14px">
-      Выберите демо-профиль для тестирования платформы
+    <h3>🧬 Регистрация в BioCase</h3>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">
+      Присоединяйтесь к сообществу — решайте задачи от биотех-компаний или публикуйте свои
     </p>
-    <div id="loginList"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:12px">
-      <button class="btn btn-ghost" onclick="closeModal('loginModal')">Закрыть</button>
+
+    <div id="regStep1">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Кто вы?</div>
+      <div class="role-cards">
+        <div class="role-card" id="role_student" onclick="selectRegRole('student')">
+          <div class="role-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>
+          </div>
+          <div class="role-card-title">Студент</div>
+          <div class="role-card-desc">Решайте задачи, копите портфолио, находите стажировки</div>
+        </div>
+        <div class="role-card" id="role_org" onclick="selectRegRole('org')">
+          <div class="role-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3v6l-6 10a2 2 0 002 3h12a2 2 0 002-3l-6-10V3"/><line x1="8" y1="3" x2="16" y2="3"/></svg>
+          </div>
+          <div class="role-card-title">Организация</div>
+          <div class="role-card-desc">Публикуйте кейсы и находите талантливых студентов</div>
+        </div>
+      </div>
+      <div id="regFormWrap" style="display:none">
+        <div id="regFormFields"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+          <button class="btn btn-ghost" onclick="closeModal('registerModal')">Отмена</button>
+          <button class="btn btn-primary" onclick="submitRegister()">Зарегистрироваться</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--text-muted)">
+      Уже есть аккаунт? <a href="#" onclick="closeModal('registerModal');return false">Войти</a>
     </div>
   </div>
 </div>
@@ -628,18 +680,18 @@ const CAT_ICONS = {
   grid:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
 };
 
-// Seed users (не сохраняются в localStorage — это справочник)
-const USERS = {
-  u1:{id:'u1',name:'Анна Соколова',role:'student',uni:'МГУ, биологический факультет',spec:'Молекулярная биология',status:'Ищу стажировку',avatar:'АС',solved:7,best:2},
-  u2:{id:'u2',name:'Игорь Петров',role:'student',uni:'СПбГУ, биофак',spec:'Биохимия',status:'Активен',avatar:'ИП',solved:4,best:1},
-  u3:{id:'u3',name:'Мария Лебедева',role:'student',uni:'НГУ, енф',spec:'Ботаника / физиология растений',status:'Ищу стажировку',avatar:'МЛ',solved:11,best:5},
-  u4:{id:'u4',name:'Дмитрий Волков',role:'student',uni:'КФУ',spec:'Зоология / этология',status:'Активен',avatar:'ДВ',solved:3,best:0},
-  o1:{id:'o1',name:'BioTech Lab',role:'org',uni:'Биотехнологическая лаборатория',spec:'R&D в области генной инженерии',status:'Партнёр',avatar:'BL',solved:0,best:0},
-  o2:{id:'o2',name:'GreenPharm Research',role:'org',uni:'Исследовательский центр',spec:'Фитохимия и фармакогнозия',status:'Партнёр',avatar:'GP',solved:0,best:0},
-  o3:{id:'o3',name:'Администрация форума',role:'admin',uni:'—',spec:'Модерация и образовательные инициативы',status:'Администратор',avatar:'АФ',solved:0,best:0}
-};
+// Seed users (демо-аккаунты для демонстрации)
+const SEED_USERS = [
+  {id:'u1',name:'Анна Соколова',role:'student',uni:'МГУ, биологический факультет',spec:'Молекулярная биология',status:'Ищу стажировку',avatar:'АС',solved:7,best:2},
+  {id:'u2',name:'Игорь Петров',role:'student',uni:'СПбГУ, биофак',spec:'Биохимия',status:'Активен',avatar:'ИП',solved:4,best:1},
+  {id:'u3',name:'Мария Лебедева',role:'student',uni:'НГУ, енф',spec:'Ботаника / физиология растений',status:'Ищу стажировку',avatar:'МЛ',solved:11,best:5},
+  {id:'u4',name:'Дмитрий Волков',role:'student',uni:'КФУ',spec:'Зоология / этология',status:'Активен',avatar:'ДВ',solved:3,best:0},
+  {id:'o1',name:'BioTech Lab',role:'org',uni:'Биотехнологическая лаборатория',spec:'R&D в области генной инженерии',status:'Партнёр',avatar:'BL',solved:0,best:0},
+  {id:'o2',name:'GreenPharm Research',role:'org',uni:'Исследовательский центр',spec:'Фитохимия и фармакогнозия',status:'Партнёр',avatar:'GP',solved:0,best:0},
+  {id:'o3',name:'Администрация форума',role:'org',uni:'—',spec:'Модерация и образовательные инициативы',status:'Администратор',avatar:'АФ',solved:0,best:0}
+];
 
-// Seed tasks (исходные данные — используются при первом запуске или после очистки)
+// Seed tasks
 const DEFAULT_TASKS = [
   {
     id:'t1', title:'Оптимизация ПЦР-праймеров для амплификации гена GFP',
@@ -845,9 +897,10 @@ const DEFAULT_NOTES = [
 ];
 
 /* ============================================================
-   LOCALSTORAGE HELPERS — безопасные чтение/запись
+   LOCALSTORAGE HELPERS
 ============================================================ */
 const LS_KEYS = {
+  users: 'biocase_users',
   tasks: 'biocase_tasks',
   notes: 'biocase_notes',
   currentUserId: 'biocase_currentUserId'
@@ -857,8 +910,7 @@ function lsGet(key, fallback){
   try{
     const raw = localStorage.getItem(key);
     if(raw === null || raw === undefined) return fallback;
-    const parsed = JSON.parse(raw);
-    return parsed;
+    return JSON.parse(raw);
   } catch(e){
     console.warn('localStorage: не удалось прочитать ключ "'+key+'". Очистка.', e);
     try{ localStorage.removeItem(key); } catch(_){}
@@ -868,7 +920,6 @@ function lsGet(key, fallback){
 
 function lsSet(key, value){
   try{
-    // гарантируем, что сохраняем строку JSON
     const str = (typeof value === 'string') ? value : JSON.stringify(value);
     localStorage.setItem(key, str);
     return true;
@@ -879,16 +930,8 @@ function lsSet(key, value){
   }
 }
 
-function lsClearAll(){
-  try{
-    Object.values(LS_KEYS).forEach(k=>localStorage.removeItem(k));
-  } catch(e){
-    console.warn('localStorage: не удалось очистить.', e);
-  }
-}
-
 /* ============================================================
-   STATE — загружается из localStorage или из seed-данных
+   STATE
 ============================================================ */
 const STATE = {
   view:'home',
@@ -897,17 +940,41 @@ const STATE = {
   statusFilter:'all',
   currentTaskId:null,
   profileTab:'profile',
-  currentUserId:'u1',
+  currentUserId:'guest',
   searchQuery:'',
   searchRole:'all',
-  tasks: [],
-  notes: [],
+  users:{},
+  tasks:[],
+  notes:[],
   editorTarget:null,
   editorMode:'edit',
-  _editors:{}
+  _editors:{},
+  _regRole:null
+};
+
+// Гость — специальный объект
+const GUEST_USER = {
+  id:'guest',
+  name:'Гость',
+  role:'guest',
+  uni:'',
+  spec:'',
+  status:'Не зарегистрирован',
+  avatar:'Г',
+  solved:0,
+  best:0
 };
 
 function loadState(){
+  // users
+  let users = lsGet(LS_KEYS.users, null);
+  if(!Array.isArray(users) || users.length === 0){
+    users = JSON.parse(JSON.stringify(SEED_USERS));
+    lsSet(LS_KEYS.users, users);
+  }
+  STATE.users = {};
+  users.forEach(u => STATE.users[u.id] = u);
+
   // tasks
   let tasks = lsGet(LS_KEYS.tasks, null);
   if(!Array.isArray(tasks) || tasks.length === 0){
@@ -926,19 +993,48 @@ function loadState(){
 
   // currentUserId
   let uid = lsGet(LS_KEYS.currentUserId, null);
-  if(typeof uid !== 'string' || !USERS[uid]){
-    uid = 'u1';
+  if(typeof uid !== 'string' || (uid !== 'guest' && !STATE.users[uid])){
+    uid = 'guest';
     lsSet(LS_KEYS.currentUserId, uid);
   }
   STATE.currentUserId = uid;
 }
 
+function saveUsers(){
+  lsSet(LS_KEYS.users, Object.values(STATE.users));
+}
 function saveTasks(){ lsSet(LS_KEYS.tasks, STATE.tasks); }
 function saveNotes(){ lsSet(LS_KEYS.notes, STATE.notes); }
 function saveUserId(){ lsSet(LS_KEYS.currentUserId, STATE.currentUserId); }
 
-// Загружаем состояние при старте
 loadState();
+
+/* ============================================================
+   USER HELPERS
+============================================================ */
+function getUserById(id){
+  if(id === 'guest' || !id) return GUEST_USER;
+  return STATE.users[id] || GUEST_USER;
+}
+
+function currentUser(){
+  if(STATE.currentUserId === 'guest') return GUEST_USER;
+  return STATE.users[STATE.currentUserId] || GUEST_USER;
+}
+
+function isGuest(){
+  return STATE.currentUserId === 'guest';
+}
+
+function isOrg(){
+  const u = currentUser();
+  return u.role === 'org';
+}
+
+function isStudent(){
+  const u = currentUser();
+  return u.role === 'student';
+}
 
 /* ============================================================
    BB-CODE PARSER
@@ -952,34 +1048,28 @@ function parseBB(text){
   if(text === null || text === undefined) return '';
   let s = escapeHtml(text);
 
-  // code (защищаем от дальнейшей обработки)
   const codeBlocks = [];
   s = s.replace(/\[code\]([\s\S]*?)\[\/code\]/gi, (m,c)=>{
     codeBlocks.push('<code>'+c+'</code>');
     return '%%CODE'+(codeBlocks.length-1)+'%%';
   });
 
-  // bold, italic, underline
   s = s.replace(/\[b\]([\s\S]*?)\[\/b\]/gi,'<strong>$1</strong>');
   s = s.replace(/\[i\]([\s\S]*?)\[\/i\]/gi,'<em>$1</em>');
   s = s.replace(/\[u\]([\s\S]*?)\[\/u\]/gi,'<u>$1</u>');
   s = s.replace(/\[sub\]([\s\S]*?)\[\/sub\]/gi,'<sub>$1</sub>');
   s = s.replace(/\[sup\]([\s\S]*?)\[\/sup\]/gi,'<sup>$1</sup>');
 
-  // quote
   s = s.replace(/\[quote\]([\s\S]*?)\[\/quote\]/gi,'<blockquote>$1</blockquote>');
 
-  // url
   s = s.replace(/\[url=(.*?)\](.*?)\[\/url\]/gi,'<a href="$1" target="_blank" rel="noopener">$2</a>');
   s = s.replace(/\[url\](.*?)\[\/url\]/gi,'<a href="$1" target="_blank" rel="noopener">$1</a>');
 
-  // list
   s = s.replace(/\[list\]([\s\S]*?)\[\/list\]/gi,(m,inner)=>{
     const items = inner.split(/\[\*\]/).filter(x=>x.trim().length>0);
     return '<ul>'+items.map(it=>'<li>'+it.replace(/\n$/,'')+'</li>').join('')+'</ul>';
   });
 
-  // paragraphs: split by double newline
   s = s.split(/\n{2,}/).map(p=>{
     p = p.trim();
     if(!p) return '';
@@ -987,7 +1077,6 @@ function parseBB(text){
     return '<p>'+p.replace(/\n/g,'<br>')+'</p>';
   }).join('\n');
 
-  // restore code
   s = s.replace(/%%CODE(\d+)%%/g,(m,i)=>codeBlocks[+i]);
 
   return s;
@@ -1010,16 +1099,15 @@ function toast(msg){
 function openModal(id){$('#'+id).classList.add('open')}
 function closeModal(id){$('#'+id).classList.remove('open')}
 
-function currentUser(){return USERS[STATE.currentUserId] || USERS.u1}
-
 function avatarHTML(user,cls){
   cls = cls || '';
   const org = user.role==='org'?'org':'';
-  return '<div class="avatar '+cls+' '+org+'">'+user.avatar+'</div>';
+  const guest = user.role==='guest'?'guest':'';
+  return '<div class="avatar '+cls+' '+org+' '+guest+'">'+user.avatar+'</div>';
 }
 
 function roleLabel(r){
-  return {student:'Студент',org:'Организация',admin:'Администратор'}[r]||r;
+  return {student:'Студент',org:'Организация',admin:'Администратор',guest:'Гость'}[r]||r;
 }
 
 function levelTag(lv){
@@ -1052,8 +1140,13 @@ function navigate(view, params){
    RENDER: HEADER USER CHIP
 ============================================================ */
 function renderUserChip(){
-  const u = currentUser();
-  $('#userChip').innerHTML = avatarHTML(u) + '<div style="font-size:13px;line-height:1.2"><div style="font-weight:600">'+escapeHtml(u.name)+'</div><div style="color:var(--text-muted);font-size:11px">'+roleLabel(u.role)+'</div></div>';
+  const wrap = $('#userChipWrap');
+  if(isGuest()){
+    wrap.innerHTML = '<button class="btn btn-soft" onclick="openRegisterModal()">🔑 Войти / Регистрация</button>';
+  } else {
+    const u = currentUser();
+    wrap.innerHTML = '<div class="user-chip" onclick="navigate(\'profile\')">'+avatarHTML(u)+'<div style="font-size:13px;line-height:1.2"><div style="font-weight:600">'+escapeHtml(u.name)+'</div><div style="color:var(--text-muted);font-size:11px">'+roleLabel(u.role)+'</div></div></div>';
+  }
 }
 
 /* ============================================================
@@ -1126,7 +1219,7 @@ function renderHome(){
           <div class="task-meta">
             <span>📅 ${t.date}</span>
             <span>💬 ${t.solutionsList.length} ${t.solutionsList.length===1?'решение':(t.solutionsList.length>=2&&t.solutionsList.length<=4?'решения':'решений')}</span>
-            <span>👤 ${escapeHtml(USERS[t.authorId]?USERS[t.authorId].name:'—')}</span>
+            <span>👤 ${escapeHtml(getUserById(t.authorId).name)}</span>
           </div>
           <div class="task-preview">${escapeHtml(preview)}…</div>
         </div>`;
@@ -1147,7 +1240,7 @@ function renderTaskPage(){
   if(!t) return '<div class="empty">Задача не найдена</div>';
   const cat = CATEGORIES[t.cat];
 
-  const isAuthorOrAdmin = (t.authorId===STATE.currentUserId || currentUser().role==='admin');
+  const isAuthorOrAdmin = (t.authorId===STATE.currentUserId || currentUser().role==='org');
 
   return `
     <div style="margin-bottom:16px">
@@ -1167,13 +1260,13 @@ function renderTaskPage(){
           <div class="task-meta" style="margin-bottom:14px">
             <span>📅 ${t.date}</span>
             <span>💬 ${t.solutionsList.length} решений</span>
-            <span>👤 ${escapeHtml(USERS[t.authorId]?USERS[t.authorId].name:'—')}</span>
+            <span>👤 ${escapeHtml(getUserById(t.authorId).name)}</span>
           </div>
           <div class="task-body">${parseBB(t.body)}</div>
         </div>
 
         <div class="solutions-head">
-          <h2>💡 Решения студентов (${t.solutionsList.length})</h2>
+          <h2>💡 Решения (${t.solutionsList.length})</h2>
           <button class="btn btn-soft btn-sm" onclick="toggleNotes(true)">📓 Открыть заметки</button>
         </div>
 
@@ -1183,8 +1276,7 @@ function renderTaskPage(){
             <div>Пока никто не предложил решение. Будьте первым!</div>
           </div>
         `:t.solutionsList.map(s=>{
-          const a = USERS[s.authorId];
-          if(!a) return '';
+          const a = getUserById(s.authorId);
           return `
           <div class="solution ${s.best?'best':''}">
             <div class="solution-head">
@@ -1206,10 +1298,11 @@ function renderTaskPage(){
 
         <div class="editor-wrap" style="margin-top:20px">
           <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:600">
-            ✍️ Предложить решение
+            ✍️ ${isGuest()?'Предложить решение (как гость)':'Предложить решение'}
           </div>
           ${renderEditor('solution_editor','')}
           <div class="editor-footer">
+            ${isGuest()?'<span style="font-size:12px;color:var(--text-muted);margin-right:auto">💡 <a href="#" onclick="openRegisterModal();return false">Зарегистрируйтесь</a>, чтобы решения попадали в ваш профиль</span>':''}
             <button class="btn btn-primary" onclick="submitSolution('${t.id}')">Отправить решение</button>
           </div>
         </div>
@@ -1226,8 +1319,8 @@ function renderTaskPage(){
         </div>
 
         <div class="side-card">
-          <h3>👥 Активные студенты</h3>
-          ${Object.values(USERS).filter(u=>u.role==='student').slice(0,4).map(u=>`
+          <h3>👥 Активные участники</h3>
+          ${Object.values(STATE.users).filter(u=>u.role==='student').slice(0,4).map(u=>`
             <div class="side-item" style="display:flex;gap:8px;align-items:center">
               ${avatarHTML(u)}
               <div>
@@ -1359,11 +1452,13 @@ function getEditorText(id){
    NEW TASK
 ============================================================ */
 function openNewTaskModal(){
-  const u = currentUser();
-  if(u.role==='student'){
-    toast('⚠ Публикация задач доступна организациям и администраторам');
+  if(!isOrg()){
+    toast('⚠ Публикация задач доступна только организациям');
+    if(isGuest()) openRegisterModal();
     return;
   }
+  const u = currentUser();
+  $('#nt_org').value = u.name || '';
   STATE._editors = STATE._editors || {};
   STATE._editors['nt_editor'] = {text:'',mode:'edit'};
   openModal('newTaskModal');
@@ -1376,6 +1471,7 @@ function renderNewTaskEditor(){
 }
 
 function submitNewTask(){
+  if(!isOrg()){toast('⚠ Только организации могут публиковать задачи');return}
   const title = $('#nt_title').value.trim();
   const cat = $('#nt_cat').value;
   const level = $('#nt_level').value;
@@ -1400,12 +1496,202 @@ function submitNewTask(){
 }
 
 /* ============================================================
+   REGISTER
+============================================================ */
+function openRegisterModal(){
+  STATE._regRole = null;
+  openModal('registerModal');
+  renderRegStep1();
+}
+
+function renderRegStep1(){
+  const step1 = $('#regStep1');
+  if(!step1) return;
+  step1.innerHTML = `
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Кто вы?</div>
+    <div class="role-cards">
+      <div class="role-card" id="role_student" onclick="selectRegRole('student')">
+        <div class="role-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>
+        </div>
+        <div class="role-card-title">Студент</div>
+        <div class="role-card-desc">Решайте задачи, копите портфолио, находите стажировки</div>
+      </div>
+      <div class="role-card" id="role_org" onclick="selectRegRole('org')">
+        <div class="role-card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3v6l-6 10a2 2 0 002 3h12a2 2 0 002-3l-6-10V3"/><line x1="8" y1="3" x2="16" y2="3"/></svg>
+        </div>
+        <div class="role-card-title">Организация</div>
+        <div class="role-card-desc">Публикуйте кейсы и находите талантливых студентов</div>
+      </div>
+    </div>
+    <div id="regFormWrap" style="display:none">
+      <div id="regFormFields"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button class="btn btn-ghost" onclick="closeModal('registerModal')">Отмена</button>
+        <button class="btn btn-primary" onclick="submitRegister()">Зарегистрироваться</button>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--text-muted)">
+      Уже есть аккаунт? <a href="#" onclick="closeModal('registerModal');return false">Войти</a>
+    </div>
+  `;
+  if(STATE._regRole) selectRegRole(STATE._regRole, true);
+}
+
+function selectRegRole(role, silent){
+  STATE._regRole = role;
+  const studentCard = $('#role_student');
+  const orgCard = $('#role_org');
+  if(studentCard) studentCard.classList.toggle('selected', role==='student');
+  if(orgCard) orgCard.classList.toggle('selected', role==='org');
+
+  const formWrap = $('#regFormWrap');
+  const formFields = $('#regFormFields');
+  if(!formWrap || !formFields) return;
+
+  formWrap.style.display = 'block';
+
+  if(role==='student'){
+    formFields.innerHTML = `
+      <div class="form-group">
+        <label>Имя и фамилия *</label>
+        <input id="reg_name" placeholder="Например: Анна Соколова">
+      </div>
+      <div class="form-group">
+        <label>ВУЗ</label>
+        <input id="reg_uni" placeholder="Например: МГУ, биологический факультет">
+      </div>
+      <div class="form-group">
+        <label>Специализация</label>
+        <input id="reg_spec" placeholder="Например: Молекулярная биология">
+      </div>
+      <div class="form-group">
+        <label>Статус</label>
+        <select id="reg_status">
+          <option value="Ищу стажировку">Ищу стажировку</option>
+          <option value="Активен">Активен</option>
+          <option value="Открыт к предложениям">Открыт к предложениям</option>
+        </select>
+      </div>
+    `;
+  } else if(role==='org'){
+    formFields.innerHTML = `
+      <div class="form-group">
+        <label>Название организации *</label>
+        <input id="reg_name" placeholder="Например: BioTech Lab">
+      </div>
+      <div class="form-group">
+        <label>Тип организации</label>
+        <input id="reg_uni" placeholder="Например: Биотехнологическая лаборатория">
+      </div>
+      <div class="form-group">
+        <label>Специализация</label>
+        <input id="reg_spec" placeholder="Например: R&D в области генной инженерии">
+      </div>
+      <div class="form-group">
+        <label>Статус</label>
+        <select id="reg_status">
+          <option value="Партнёр">Партнёр</option>
+          <option value="Исследовательский центр">Исследовательский центр</option>
+          <option value="Биотех-стартап">Биотех-стартап</option>
+        </select>
+      </div>
+    `;
+  }
+}
+
+function submitRegister(){
+  const role = STATE._regRole;
+  if(!role){toast('Выберите роль');return}
+
+  const name = $('#reg_name').value.trim();
+  if(!name){toast('Введите имя');return}
+
+  const uni = $('#reg_uni').value.trim();
+  const spec = $('#reg_spec').value.trim();
+  const status = $('#reg_status').value;
+
+  // Генерируем аватар из первых букв
+  const words = name.split(/\s+/);
+  const avatar = words.length >= 2
+    ? (words[0][0] + words[1][0]).toUpperCase()
+    : name.substring(0,2).toUpperCase();
+
+  const newId = 'user_' + Date.now();
+  const newUser = {
+    id: newId,
+    name: name,
+    role: role,
+    uni: uni || '—',
+    spec: spec || '—',
+    status: status,
+    avatar: avatar,
+    solved: 0,
+    best: 0
+  };
+
+  STATE.users[newId] = newUser;
+  saveUsers();
+
+  STATE.currentUserId = newId;
+  saveUserId();
+
+  closeModal('registerModal');
+  toast('✓ Добро пожаловать, ' + name + '!');
+  renderUserChip();
+  render();
+}
+
+function logout(){
+  if(!confirm('Выйти из аккаунта?')) return;
+  STATE.currentUserId = 'guest';
+  saveUserId();
+  toast('Вы вышли из аккаунта');
+  renderUserChip();
+  navigate('home');
+}
+
+/* ============================================================
    PROFILE
 ============================================================ */
 function renderProfile(){
   const u = currentUser();
-  const isOrg = u.role==='org';
-  const isAdmin = u.role==='admin';
+
+  if(isGuest()){
+    return `
+      <h1 class="page-title">Личный кабинет</h1>
+      <p class="page-sub">Войдите или зарегистрируйтесь, чтобы получить доступ к полному функционалу</p>
+
+      <div class="empty" style="padding:60px 40px">
+        <div class="empty-icon" style="font-size:48px">🔐</div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:8px;color:var(--text)">Вы просматриваете как гость</h2>
+        <p style="margin-bottom:20px;color:var(--text-muted);max-width:400px;margin-left:auto;margin-right:auto">
+          Зарегистрируйтесь, чтобы сохранять решения в профиле, вести заметки и следить за активностью
+        </p>
+        <button class="btn btn-primary" onclick="openRegisterModal()" style="font-size:15px;padding:12px 24px">
+          🧬 Зарегистрироваться
+        </button>
+      </div>
+
+      <div style="margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+        <div class="side-card">
+          <h3>🎓 Студент</h3>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6">
+            Решайте задачи от биотех-компаний, копите портфолио лучших решений, находите стажировки и работу
+          </div>
+        </div>
+        <div class="side-card">
+          <h3>🏢 Организация</h3>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6">
+            Публикуйте реальные кейсы, находите талантливых студентов, получайте решения от сообщества
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  const isOrgUser = u.role === 'org';
 
   let tabContent = '';
   if(STATE.profileTab==='profile'){
@@ -1413,7 +1699,7 @@ function renderProfile(){
       <div class="profile-head">
         ${avatarHTML(u,'lg')}
         <div class="profile-info" style="flex:1">
-          <span class="role ${isOrg?'org':''}">${roleLabel(u.role)}</span>
+          <span class="role ${isOrgUser?'org':''}">${roleLabel(u.role)}</span>
           <h2>${escapeHtml(u.name)}</h2>
           <div class="meta">${escapeHtml(u.uni||'—')}</div>
           <div class="meta">Специализация: ${escapeHtml(u.spec||'—')}</div>
@@ -1429,14 +1715,14 @@ function renderProfile(){
             </div>
           `:''}
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="openModal('loginModal')">Сменить профиль</button>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">🚪 Выйти</button>
       </div>
 
-      ${isOrg||isAdmin?`
+      ${isOrgUser?`
         <div class="side-card">
-          <h3>🚀 Возможности</h3>
+          <h3>🚀 Возможности организации</h3>
           <div style="font-size:14px;color:var(--text-muted);margin-bottom:10px">
-            Как ${roleLabel(u.role).toLowerCase()}, вы можете публиковать задачи от имени организации.
+            Как организация, вы можете публиковать задачи от имени вашей компании или лаборатории.
           </div>
           <button class="btn btn-primary" onclick="openNewTaskModal()">+ Опубликовать новую задачу</button>
         </div>
@@ -1669,7 +1955,7 @@ function renderCommunity(){
   const q = STATE.searchQuery.toLowerCase().trim();
   const role = STATE.searchRole;
 
-  let people = Object.values(USERS);
+  let people = Object.values(STATE.users);
   if(role!=='all') people = people.filter(u=>u.role===role);
   if(q) people = people.filter(u=>
     u.name.toLowerCase().includes(q)||
@@ -1687,9 +1973,9 @@ function renderCommunity(){
 
     <div class="filters-row" style="margin-bottom:20px">
       <span class="filters-label">Кого ищем:</span>
-      ${['all','student','org','admin'].map(r=>`
+      ${['all','student','org'].map(r=>`
         <span class="chip ${STATE.searchRole===r?'active':''}" onclick="setSearchRole('${r}')">
-          ${r==='all'?'Все':r==='student'?'Студенты':r==='org'?'Организации':'Администраторы'}
+          ${r==='all'?'Все':r==='student'?'Студенты':'Организации'}
         </span>
       `).join('')}
     </div>
@@ -1701,7 +1987,7 @@ function renderCommunity(){
           <div>Никого не найдено</div>
         </div>
       `:people.map(u=>{
-        const isOrg = u.role==='org';
+        const isOrgUser = u.role==='org';
         return `
         <div class="person-card">
           <div class="person-top">
@@ -1709,7 +1995,7 @@ function renderCommunity(){
             <div>
               <div class="person-name">${escapeHtml(u.name)}</div>
               <div class="person-role">
-                <span class="role ${isOrg?'org':''}" style="font-size:11px;padding:2px 8px">${roleLabel(u.role)}</span>
+                <span class="role ${isOrgUser?'org':''}" style="font-size:11px;padding:2px 8px">${roleLabel(u.role)}</span>
               </div>
             </div>
           </div>
@@ -1741,38 +2027,10 @@ function updateSearch(v){
 function setSearchRole(r){STATE.searchRole=r;render()}
 
 /* ============================================================
-   LOGIN
-============================================================ */
-function renderLoginList(){
-  const host = $('#loginList');
-  if(!host) return;
-  host.innerHTML = Object.values(USERS).map(u=>`
-    <div style="display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .15s" 
-         onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'"
-         onclick="switchUser('${u.id}')">
-      ${avatarHTML(u)}
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:14px">${escapeHtml(u.name)} ${STATE.currentUserId===u.id?'<span style="color:var(--primary);font-size:11px">· текущий</span>':''}</div>
-        <div style="font-size:12px;color:var(--text-muted)">${roleLabel(u.role)} · ${escapeHtml(u.uni||'')}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function switchUser(id){
-  if(!USERS[id]) return;
-  STATE.currentUserId = id;
-  saveUserId();
-  closeModal('loginModal');
-  renderUserChip();
-  toast('✓ Профиль изменён: '+USERS[id].name);
-  render();
-}
-
-/* ============================================================
    MAIN RENDER
 ============================================================ */
 function render(){
+  renderUserChip();
   const app = $('#app');
   let html = '';
   if(STATE.view==='home') html = renderHome();
@@ -1781,12 +2039,9 @@ function render(){
   else if(STATE.view==='community') html = renderCommunity();
   app.innerHTML = html;
 
-  // nav active
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===STATE.view||(STATE.view==='task'&&b.dataset.view==='home')));
 
-  // post-render hooks
   if(STATE.view==='task' && $('#nt_editor')) renderNewTaskEditor();
-  if($('#loginList')) renderLoginList();
   if($('#notesPanel').classList.contains('open')) renderNotesPanel();
 }
 
@@ -1799,7 +2054,6 @@ document.addEventListener('click',(e)=>{
   }
 });
 
-renderUserChip();
 render();
 </script>
 </body>
